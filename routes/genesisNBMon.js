@@ -12,19 +12,19 @@ router.get("/getGenesisNBMon/:id", async (req, res) => {
 });
 
 router.get("/getOwnerGenesisNBMonIDs/:address", async (req, res) => {
-    let address = req.params.address;
-    let ownerIds = await genesisLogic
-        .getOwnerGenesisNBMonIDs(address)
-        .catch((err) => res.json(err.message));
-    res.json(ownerIds);
+	let address = req.params.address;
+	let ownerIds = await genesisLogic
+		.getOwnerGenesisNBMonIDs(address)
+		.catch((err) => res.json(err.message));
+	res.json(ownerIds);
 });
 
 router.get("/getOwnerGenesisNBMons/:address", async (req, res) => {
-    let address = req.params.address;
-    let nbmons = await genesisLogic
-        .getOwnerGenesisNBMons(address)
-        .catch((err) => res.json(err.message));
-    res.json(nbmons);
-})
+	let address = req.params.address;
+	let nbmons = await genesisLogic
+		.getOwnerGenesisNBMons(address)
+		.catch((err) => res.json(err.message));
+	res.json(nbmons);
+});
 
 module.exports = router;
