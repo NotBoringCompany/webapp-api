@@ -64,7 +64,16 @@ const getGenesisNBMon = async (id) => {
 
 const getOwnerGenesisNBMonIDs = async (address) => {
     const ids = await genesisContract.getOwnerGenesisNBMonIds(address);
-    return parseInt(Number(ids));
+    return ids;
 }
 
-module.exports = { getGenesisNBMon, getOwnerGenesisNBMonIDs };
+const getOwnerGenesisNBMons = async (address) => {
+    // const ownedIDs = await getOwnerGenesisNBMonIDs(address);
+    // let nbmons = [];
+
+    // for (let i = 0; i < ownedIDs.length; i++) {
+    //     let nbmon = await getGenesisNBMon(ownedIDs[i]);
+    // }
+
+}
+module.exports = { getGenesisNBMon, getOwnerGenesisNBMonIDs, getOwnerGenesisNBMons };
