@@ -62,4 +62,6 @@ const getGenesisNBMon = async (id) => {
 	return nbmonObj;
 };
 
+
+
 module.exports = { getGenesisNBMon };
