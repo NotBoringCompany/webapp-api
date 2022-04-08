@@ -10,8 +10,7 @@ const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const genesisNBMonABI =  fs.readFileSync(path.resolve(__dirname, "../abi/genesisNBMon.json"));
 const genesisABI = JSON.parse(genesisNBMonABI);
-// current test genesis contract = "0xa08E79512092CC7e381C341140f2Ded612b79bC6"
-const genesisContract = new ethers.Contract("0xa08E79512092CC7e381C341140f2Ded612b79bC6", genesisABI, customHttpProvider);
+const genesisContract = new ethers.Contract(process.env.CONTRACT_ADDRESS, genesisABI, customHttpProvider);
 
 const whitelistedMint = async (addr) => {
     try {
@@ -40,7 +39,7 @@ const whitelistedMint = async (addr) => {
         await response.wait();
         return response;
     } catch (err) {
-        return err.message;
+        return err;
     }
 }
 
