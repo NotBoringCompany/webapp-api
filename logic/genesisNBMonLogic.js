@@ -75,13 +75,22 @@ const getOwnerGenesisNBMonIDs = async (address) => {
     }
 }
 
+/**
+ * @dev This API call will take a longer time the more NBMons the owner has.
+ */
 const getOwnerGenesisNBMons = async (address) => {
-    // const ownedIDs = await getOwnerGenesisNBMonIDs(address);
-    // let nbmons = [];
+    try {
+        const ownedIDs = await getOwnerGenesisNBMonIDs(address);
+        let nbmons = [];
 
-    // for (let i = 0; i < ownedIDs.length; i++) {
-    //     let nbmon = await getGenesisNBMon(ownedIDs[i]);
-    // }
+        for (let i = 0; i < ownedIDs.length; i++) {
+            let nbmon = await getGenesisNBMon(ownedIDs[i]);
+            nbmons.push(nbmon);
+        }
 
+        return nbmons;
+    } catch (err) {
+        return err;
+    }
 }
 module.exports = { getGenesisNBMon, getOwnerGenesisNBMonIDs, getOwnerGenesisNBMons };
