@@ -1,6 +1,6 @@
-const ethers = require('ethers');
-const fs = require('fs');
-const path = require('path');
+const ethers = require("ethers");
+const fs = require("fs");
+const path = require("path");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
@@ -10,8 +10,8 @@ const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const genesisNBMonABI =  fs.readFileSync(path.resolve(__dirname, "../abi/genesisNBMon.json"));
 const genesisABI = JSON.parse(genesisNBMonABI);
-// current test genesis contract = '0xa08E79512092CC7e381C341140f2Ded612b79bC6'
-const genesisContract = new ethers.Contract('0xa08E79512092CC7e381C341140f2Ded612b79bC6', genesisABI, customHttpProvider);
+// current test genesis contract = "0xa08E79512092CC7e381C341140f2Ded612b79bC6"
+const genesisContract = new ethers.Contract("0xa08E79512092CC7e381C341140f2Ded612b79bC6", genesisABI, customHttpProvider);
 
 const whitelistedMint = async (addr) => {
     try {
@@ -25,7 +25,17 @@ const whitelistedMint = async (addr) => {
         let passives = [];
         let isEgg = true;
 
-        let unsignedTx = await genesisContract.populateTransaction.whitelistedGenesisEggMint(owner, amountToMint, hatchingDuration, nbmonStats, types, potential, passives, isEgg);
+        let unsignedTx = await genesisContract.populateTransaction
+            .whitelistedGenesisEggMint(
+                owner, 
+                amountToMint, 
+                hatchingDuration, 
+                nbmonStats, 
+                types, 
+                potential, 
+                passives, 
+                isEgg
+                );
         let response = await signer.sendTransaction(unsignedTx);
         await response.wait();
         return response;

@@ -11,7 +11,7 @@ const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")
 );
 const genesisABI = JSON.parse(genesisNBMonABI);
-// current test genesis contract = '0xa08E79512092CC7e381C341140f2Ded612b79bC6'
+// current test genesis contract = "0xa08E79512092CC7e381C341140f2Ded612b79bC6"
 const genesisContract = new ethers.Contract(
 	"0xa08E79512092CC7e381C341140f2Ded612b79bC6",
 	genesisABI,
@@ -62,6 +62,9 @@ const getGenesisNBMon = async (id) => {
 	return nbmonObj;
 };
 
+const getOwnerGenesisNBMonIDs = async (address) => {
+    const ids = await genesisContract.getOwnerGenesisNBMonIds(address);
+    return parseInt(Number(ids));
+}
 
-
-module.exports = { getGenesisNBMon };
+module.exports = { getGenesisNBMon, getOwnerGenesisNBMonIDs };

@@ -11,4 +11,12 @@ router.get("/getGenesisNBMon/:id", async (req, res) => {
 	res.json(nbmon);
 });
 
+router.get("/getOwnerGenesisNBMonIDs/:address", async (req, res) => {
+    let address = req.params.address;
+    let ownerIds = await genesisLogic
+        .getOwnerGenesisNBMonIDs(address)
+        .catch((err) => res.json(err.message));
+    res.json(ownerIds);
+})
+
 module.exports = router;
