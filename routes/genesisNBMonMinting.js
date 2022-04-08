@@ -15,7 +15,7 @@ router.get("/whitelistedMint/:address", async (req, res) => {
 
 /**
  * @route GET genesisNBMonMinting/publicMint/:address
- * @desc Public minting route. The publicMintTime is a middleware to check the public minting is currently open. To add more middleware simply add it in the array
+ * @desc Public minting route. The publicMintTime is a middleware to check if the public minting is currently open. To add more middleware simply add it in the array
  * @access Private - requires auth
  **/
 
