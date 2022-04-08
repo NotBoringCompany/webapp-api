@@ -12,10 +12,10 @@ const genesisNBMonABI =  fs.readFileSync(path.resolve(__dirname, "../abi/genesis
 const genesisABI = JSON.parse(genesisNBMonABI);
 const genesisContract = new ethers.Contract(process.env.CONTRACT_ADDRESS, genesisABI, customHttpProvider);
 
-const whitelistedMint = async (addr) => {
+const whitelistedMint = async (address) => {
     try {
         const signer = new ethers.Wallet(pvtKey, customHttpProvider);
-        let owner = addr;
+        let owner = address;
         let amountToMint = 1;
         let hatchingDuration = 300;
         let nbmonStats = [];
@@ -43,4 +43,36 @@ const whitelistedMint = async (addr) => {
     }
 }
 
-module.exports = {whitelistedMint};
+const publicMint = async (address) => {
+    try {
+        const signer = new ethers.Wallet(pvtKey, customHttpProvider);
+        let owner = address;
+        let amountToMint = 1;
+        let hatchingDuration = 300;
+        let nbmonStats = [];
+        let types = [];
+        let potential = [];
+        let passives = [];
+        let isEgg = true;
+
+        let unsignedTx = await genesisContract.populateTransaction
+            .publicGenesisEggMint(
+                owner, 
+                amountToMint, 
+                hatchingDuration, 
+                nbmonStats, 
+                types, 
+                potential, 
+                passives, 
+                isEgg
+                );
+        let response = await signer.sendTransaction(unsignedTx);
+        await response.wait();
+        return response;
+    } catch (err) {
+        return err;
+    }
+
+}
+
+module.exports = { whitelistedMint, publicMint };
