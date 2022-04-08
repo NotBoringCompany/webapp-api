@@ -13,4 +13,5 @@ const genesisNBMonMinting = require('./routes/genesisNBMonMinting');
 
 app.use('/genesisNBMon', genesisNBMon);
 app.use('/genesisNBMonMinting', genesisNBMonMinting);
+
 app.listen(port, () => console.log(`listening from port ${port}`));
