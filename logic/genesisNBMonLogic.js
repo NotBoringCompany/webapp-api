@@ -64,7 +64,12 @@ const getGenesisNBMon = async (id) => {
 const getOwnerGenesisNBMonIDs = async (address) => {
     try {
         const ids = await genesisContract.getOwnerGenesisNBMonIds(address);
-        return ids;
+        let convertedArray = [];
+        for (let i = 0 ; i < ids.length; i++) {
+            let converted = parseInt(Number(ids[i]));
+            convertedArray.push(converted);
+        }
+        return convertedArray;
     } catch (err) {
         return err;
     }
