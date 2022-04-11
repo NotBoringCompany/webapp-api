@@ -6,6 +6,7 @@ const moralisAPINode = process.env.MORALIS_APINODE;
 // rinkeby URL connected with Moralis
 const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
+const moment = require("moment");
 
 const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")
@@ -102,6 +103,49 @@ const getOwnerGenesisNBMons = async (address) => {
 	}
 };
 
+const config = async (address) => {
+	try {
+		const supplyLimit = 5000; // total number of NBMOns that can be minted
+		const haveBeenMinted = parseInt(
+			Number(await genesisContract.totalSupply())
+		); // total number of NBMons that have been minted
+		const isWhitelisted = await genesisContract.whitelisted(address);
+
+		const hasMintedBefore = await genesisContract.belowMintLimit(1, address);
+
+		let canMint = true;
+
+		const now = moment().unix();
+		const publicOpenAt = 1650636000;
+		const whitelistOpenAt = 1650643200;
+		// const remainingSupply = supplyLimit - parseInt(Number(totalSupply));
+
+		const isWhitelistOpen = now >= whitelistOpenAt;
+		const isPublicOpen = now >= publicOpenAt;
+
+		const supplies = { haveBeenMinted, supplyLimit };
+		const timeStamps = {
+			now,
+			publicOpenAt,
+			whitelistOpenAt,
+			isWhitelistOpen,
+			isPublicOpen,
+		};
+
+		if (isWhitelisted) {
+			canMint = false;
+		} else {
+			canMint = false;
+		}
+
+		const status = { address, canMint, isWhitelisted };
+
+		return { timeStamps, supplies, status };
+	} catch (e) {
+		return e;
+	}
+};
+
 const getSupplies = async () => {
 	try {
 		const supplyLimit = 5000; // total number of NBMOns that can be minted
@@ -135,4 +179,5 @@ module.exports = {
 	getOwnerGenesisNBMons,
 	getSupplies,
 	isWhitelisted,
+	config,
 };
