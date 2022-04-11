@@ -111,9 +111,9 @@ const config = async (address) => {
 		); // total number of NBMons that have been minted
 		const isWhitelisted = await genesisContract.whitelisted(address);
 
-		const hasMintedBefore = await genesisContract.belowMintLimit(1, address);
+		const hasMintedBefore = false; // NEEDS TO GET THIS FROM BLOCKCHAIN (WIP)
 
-		let canMint = true;
+		let canMint = false;
 
 		const now = moment().unix();
 		const publicOpenAt = 1650636000;
@@ -133,9 +133,11 @@ const config = async (address) => {
 		};
 
 		if (isWhitelisted) {
-			canMint = false;
+			if (isWhitelistOpen && !hasMintedBefore) canMint = true;
+			else canMint = false;
 		} else {
-			canMint = false;
+			if (isPublicOpen && !hasMintedBefore) canMint = true;
+			else canMint = false;
 		}
 
 		const status = { address, canMint, isWhitelisted };
