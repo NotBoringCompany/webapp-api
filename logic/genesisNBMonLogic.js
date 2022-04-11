@@ -114,10 +114,9 @@ const config = async (address) => {
 		const hasMintedBefore = false; // NEEDS TO GET THIS FROM BLOCKCHAIN (WIP)
 
 		let canMint = false;
-
 		const now = moment().unix();
-		const publicOpenAt = 1650636000;
-		const whitelistOpenAt = 1650643200;
+		const publicOpenAt = 1650643200;
+		const whitelistOpenAt = 1650636000;
 		// const remainingSupply = supplyLimit - parseInt(Number(totalSupply));
 
 		const isWhitelistOpen = now >= whitelistOpenAt;
