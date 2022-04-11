@@ -111,8 +111,9 @@ const config = async (address) => {
 		); // total number of NBMons that have been minted
 		const isWhitelisted = await genesisContract.whitelisted(address);
 
-		const hasMintedBefore = false; // NEEDS TO GET THIS FROM BLOCKCHAIN (WIP)
-
+		const hasMintedBefore = (await genesisContract.amountMinted(address))
+			? true
+			: false;
 		let canMint = false;
 		const now = moment().unix();
 		const publicOpenAt = 1650643200;
