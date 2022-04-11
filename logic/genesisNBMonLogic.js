@@ -120,9 +120,19 @@ const getSupplies = async () => {
 	}
 };
 
+const isWhitelisted = async (addr) => {
+	try {
+		const isWhitelisted = await genesisContract.whitelisted(addr);
+		return isWhitelisted;
+	} catch (err) {
+		return err;
+	}
+};
+
 module.exports = {
 	getGenesisNBMon,
 	getOwnerGenesisNBMonIDs,
 	getOwnerGenesisNBMons,
 	getSupplies,
+	isWhitelisted,
 };
