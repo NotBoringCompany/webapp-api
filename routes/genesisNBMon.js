@@ -35,6 +35,13 @@ router.get("/config/:address", async (req, res) => {
 	res.json(config);
 });
 
+router.get("/config", async (_, res) => {
+	let config = await genesisLogic
+		.generalConfig()
+		.catch((err) => res.json(err.message));
+	res.json(config);
+});
+
 router.get("/supply", async (_, res) => {
 	const supplies = await genesisLogic
 		.getSupplies()

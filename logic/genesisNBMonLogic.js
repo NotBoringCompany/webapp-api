@@ -103,18 +103,13 @@ const getOwnerGenesisNBMons = async (address) => {
 	}
 };
 
-const config = async (address) => {
+const generalConfig = async () => {
 	try {
 		const supplyLimit = 5000; // total number of NBMOns that can be minted
 		const haveBeenMinted = parseInt(
 			Number(await genesisContract.totalSupply())
 		); // total number of NBMons that have been minted
-		const isWhitelisted = await genesisContract.whitelisted(address);
 
-		const hasMintedBefore = (await genesisContract.amountMinted(address))
-			? true
-			: false;
-		let canMint = false;
 		const now = moment().unix();
 		const publicOpenAt = 1650643200;
 		const whitelistOpenAt = 1650636000;
@@ -132,6 +127,23 @@ const config = async (address) => {
 			isPublicOpen,
 		};
 
+		return { timeStamps, supplies };
+	} catch (e) {
+		return e;
+	}
+};
+
+const config = async (address) => {
+	try {
+		const generalConfigs = await generalConfig();
+		const { isWhitelistOpen, isPublicOpen } = generalConfigs;
+		const isWhitelisted = await genesisContract.whitelisted(address);
+
+		const hasMintedBefore = (await genesisContract.amountMinted(address))
+			? true
+			: false;
+		let canMint = false;
+
 		if (isWhitelisted) {
 			if (isWhitelistOpen && !hasMintedBefore) canMint = true;
 			else canMint = false;
@@ -142,7 +154,7 @@ const config = async (address) => {
 
 		const status = { address, canMint, isWhitelisted };
 
-		return { timeStamps, supplies, status };
+		return { status, ...generalConfigs };
 	} catch (e) {
 		return e;
 	}
@@ -182,4 +194,5 @@ module.exports = {
 	getSupplies,
 	isWhitelisted,
 	config,
+	generalConfig,
 };
