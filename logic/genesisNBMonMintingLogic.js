@@ -72,7 +72,6 @@ const publicMint = async (address) => {
     } catch (err) {
         return err;
     }
-
 }
 
 module.exports = { whitelistedMint, publicMint };
