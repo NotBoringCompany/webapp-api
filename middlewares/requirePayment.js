@@ -1,27 +1,37 @@
+require('dotenv').config();
 const ethers = require('ethers');
 
 const moralisAPINode = process.env.MORALIS_APINODE;
-
+const mintingPrice = process.env.MINTING_PRICE;
 // rinkeby URL connected with Moralis
 const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const paymentReceived = async (req, res, next) => {
-    let txHash = req.params.transactionHash;
-    let txReceipt = await customHttpProvider.getTransaction(txHash);
-    if (txReceipt && txReceipt.blockNumber) {
-        // ensures that the user has actually sent 0.15 ETH in order to proceed.
-        if (txReceipt.value == 0.15) {
-            console.log(txReceipt);
-            next();
+    try {
+        let txHash = req.params.transactionHash;
+        let txReceipt = await customHttpProvider.getTransaction(txHash);
+        if (txReceipt && txReceipt.blockNumber) {
+            // ensures that the user has actually sent the correct amount (minting price) to proceed.
+            if (txReceipt.value == mintingPrice) {
+                console.log(txReceipt);
+                next();
+            } else {
+                res.status(403).json({
+                    errorMessage: "User has not sent the correct amount. Please pay the minting price."
+                })
+            }
         } else {
+            // will not reach here anyway since if transaction hash is invalid, it will catch an error.
+            // this code is only for safety measure.
             res.status(403).json({
-                errorMessage: "User has not sent the correct amount. Please pay the correct value."
-            })
+                errorMessage: "Transaction hash provided is either invalid or not minted yet. Please check again later."
+            });
         }
-    } else {
+    } catch (err) {
         res.status(403).json({
-            errorMessage: "Transaction not mined yet or has wrong hash. Please check again."
+            errorMessageFromBackend: err.message,
+            errorMessage: "Transaction hash provided is either invalid or not minted yet. Please check again later."
         });
     }
 }
