@@ -111,8 +111,8 @@ const generalConfig = async () => {
 		); // total number of NBMons that have been minted
 
 		const now = moment().unix();
-		const publicOpenAt = process.env.PUBLIC_MINT_TIME_UNIX;
-		const whitelistOpenAt = process.env.WHITELIST_MINT_TIME_UNIX;
+		const publicOpenAt = parseInt(process.env.PUBLIC_MINT_TIME_UNIX);
+		const whitelistOpenAt = parseInt(process.env.WHITELIST_MINT_TIME_UNIX);
 
 		const isWhitelistOpen = now >= whitelistOpenAt;
 		const isPublicOpen = now >= publicOpenAt;
