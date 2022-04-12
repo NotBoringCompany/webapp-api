@@ -1,12 +1,12 @@
 const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
+const moment = require("moment");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
 // rinkeby URL connected with Moralis
 const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
-const moment = require("moment");
 
 const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")
@@ -105,10 +105,8 @@ const getOwnerGenesisNBMons = async (address) => {
 
 const generalConfig = async () => {
 	try {
-		const supplyLimit = 5000; // total number of NBMOns that can be minted
-		const haveBeenMinted = parseInt(
-			Number(await genesisContract.totalSupply())
-		); // total number of NBMons that have been minted
+		const supplyLimit = 5000; // total number of NBMons that can be minted
+		const haveBeenMinted = parseInt(Number(await genesisContract.totalSupply())); // total number of NBMons that have been minted
 
 		const now = moment().unix();
 		const publicOpenAt = parseInt(process.env.PUBLIC_MINT_TIME_UNIX);
@@ -127,8 +125,8 @@ const generalConfig = async () => {
 		};
 
 		return { timeStamps, supplies };
-	} catch (e) {
-		return e;
+	} catch (err) {
+		return err;
 	}
 };
 
@@ -138,9 +136,7 @@ const config = async (address) => {
 		const { isWhitelistOpen, isPublicOpen } = generalConfigs;
 		const isWhitelisted = await genesisContract.whitelisted(address);
 
-		const hasMintedBefore = (await genesisContract.amountMinted(address))
-			? true
-			: false;
+		const hasMintedBefore = await genesisContract.amountMinted(address) === 1 ? true : false;
 		let canMint = false;
 
 		if (isWhitelisted) {
@@ -154,24 +150,19 @@ const config = async (address) => {
 		const status = { address, canMint, isWhitelisted, hasMintedBefore };
 
 		return { status, ...generalConfigs };
-	} catch (e) {
-		return e;
+	} catch (err) {
+		return err;
 	}
 };
 
 const getSupplies = async () => {
 	try {
-		const supplyLimit = 5000; // total number of NBMOns that can be minted
-		const haveBeenMinted = parseInt(
-			Number(await genesisContract.totalSupply())
-		); // total number of NBMons that have been minted
+		const supplyLimit = 5000; // total number of NBMons that can be minted
+		const haveBeenMinted = parseInt(Number(await genesisContract.totalSupply())); // total number of NBMons that have been minted
 
 		// const remainingSupply = supplyLimit - parseInt(Number(totalSupply));
 
-		return {
-			haveBeenMinted,
-			supplyLimit,
-		};
+		return { haveBeenMinted, supplyLimit };
 	} catch (err) {
 		return err;
 	}
