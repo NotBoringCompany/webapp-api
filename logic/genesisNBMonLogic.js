@@ -111,9 +111,8 @@ const generalConfig = async () => {
 		); // total number of NBMons that have been minted
 
 		const now = moment().unix();
-		const publicOpenAt = 1650643200;
-		const whitelistOpenAt = 1650636000;
-		// const remainingSupply = supplyLimit - parseInt(Number(totalSupply));
+		const publicOpenAt = process.env.PUBLIC_MINT_TIME_UNIX;
+		const whitelistOpenAt = process.env.WHITELIST_MINT_TIME_UNIX;
 
 		const isWhitelistOpen = now >= whitelistOpenAt;
 		const isPublicOpen = now >= publicOpenAt;
@@ -178,21 +177,11 @@ const getSupplies = async () => {
 	}
 };
 
-const isWhitelisted = async (addr) => {
-	try {
-		const isWhitelisted = await genesisContract.whitelisted(addr);
-		return isWhitelisted;
-	} catch (err) {
-		return err;
-	}
-};
-
 module.exports = {
 	getGenesisNBMon,
 	getOwnerGenesisNBMonIDs,
 	getOwnerGenesisNBMons,
 	getSupplies,
-	isWhitelisted,
 	config,
 	generalConfig,
 };
