@@ -151,7 +151,7 @@ const config = async (address) => {
 			else canMint = false;
 		}
 
-		const status = { address, canMint, isWhitelisted };
+		const status = { address, canMint, isWhitelisted, hasMintedBefore };
 
 		return { status, ...generalConfigs };
 	} catch (e) {
