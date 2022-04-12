@@ -22,8 +22,8 @@ const paymentReceived = async (req, res, next) => {
                 })
             }
         } else {
-            // will not reach here anyway since if transaction hash is invalid, it will catch an error.
-            // this code is only for safety measure.
+            // will not reach here anyway since if the transaction hash is invalid, it will directly catch an error.
+            // this code is only for safety measures.
             res.status(403).json({
                 errorMessage: "Transaction hash provided is either invalid or not minted yet. Please check again later."
             });
