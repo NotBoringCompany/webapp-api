@@ -2,7 +2,8 @@ require("dotenv").config();
 const ethers = require("ethers");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
-const ethTransactionWalletAddress = process.env.ETH_TRANSACTION_WALLET_ADDRESS;
+// address for receiving payment from user
+const receiverAddress = process.env.RECEIVER_ADDRESS;
 const mintingPrice = parseFloat(process.env.MINTING_PRICE);
 // rinkeby URL connected with Moralis
 const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
@@ -10,23 +11,20 @@ const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const paymentReceived = async (req, res, next) => {
 	try {
-		const { txHash, customerWalletAddress } = req.body;
+		const { txHash, purchaserAddress } = req.body;
 
 		let txReceipt = await customHttpProvider.getTransaction(txHash);
-		const ethValueDecimal = parseFloat(
-			parseInt(Number(txReceipt.value)) / Math.pow(10, 18) // converts wei to eth
-		);
 		if (txReceipt && txReceipt.blockNumber) {
 			// ensures that the user has actually sent the correct amount (minting price) to proceed.
 			if (
-				ethValueDecimal === mintingPrice &&
-				txReceipt.to === ethTransactionWalletAddress &&
-				txReceipt.from.toLowerCase() === customerWalletAddress.toLowerCase()
+				ethers.utils.formatEther(txReceipt.value) === mintingPrice &&
+				txReceipt.to === receiverAddress &&
+				txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 			) {
 				next();
 			} else {
 				res.status(403).json({
-					errorMessage: "Transaction is invalid for minting",
+					errorMessage: "User did not pay minting price or to or from address is wrong. Please check again."
 				});
 			}
 		} else {
@@ -34,14 +32,14 @@ const paymentReceived = async (req, res, next) => {
 			// this code is only for safety measures.
 			res.status(403).json({
 				errorMessage:
-					"Transaction hash provided is either invalid or not minted yet. Please check again later.",
+					"Transaction hash provided is either invalid or not minted yet. Please check again later."
 			});
 		}
 	} catch (err) {
 		res.status(403).json({
 			errorMessageFromBackend: err.message,
 			errorMessage:
-				"Transaction hash provided is either invalid or not minted yet. Please check again later.",
+				"Transaction hash provided is either invalid or not minted yet. Please check again later."
 		});
 	}
 };
