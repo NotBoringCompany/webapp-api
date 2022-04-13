@@ -11,10 +11,10 @@ router.post(
 	isWhitelistMintingTime,
 	mintingTimeNotClosed,
 	async (req, res) => {
-		const { address } = req.body;
+		const { purchaserAddress } = req.body;
 
 		let whitelistedMint = await genesisMintingLogic
-			.whitelistedMint(address)
+			.whitelistedMint(purchaserAddress)
 			.catch((err) => res.json(err.message));
 		res.json(whitelistedMint);
 	}
@@ -26,10 +26,10 @@ router.post(
 	isPublicMintingTime,
 	mintingTimeNotClosed,
 	async (req, res) => {
-		const { address } = req.body;
+		const { purchaserAddress } = req.body;
 
 		let publicMint = await genesisMintingLogic
-			.publicMint(address)
+			.publicMint(purchaserAddress)
 			.catch((err) => res.json(err.message));
 		res.json(publicMint);
 });
