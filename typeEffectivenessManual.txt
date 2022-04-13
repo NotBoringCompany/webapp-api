@@ -1,0 +1,31 @@
+The syntax for the object is as follows:
+  
+the first field (i.e. typeObj[x][...][...]) resembles the damage multiplier for either "attack" or "defense"
+
+the second field (i.e. typeObj[...][x][...]) resembles the 'from' type for attacks and 'to' type for defense.
+the third field (i.e. typeObj[...][...][x]) resembles the 'to' type for attacks and 'from' type for defense.
+
+For example:
+typeObj["attack"]["ordinary"]["fire"] resembles the attack damage from an "ordinary" type to a "fire" type.
+typeObj["defense"]["ordinary"]["fire"] resembles the defense multiplier that an "ordinary" type takes when being attacked by a "fire" type.
+
+Notes:
+For attacks:
+No damage: 0%
+Very weak: 25%
+Weak: 50%
+Slightly weak: 75%
+Normal: 100%
+Slightly effective: 125%
+Effective: 150%
+Super effective: 200%
+
+For defense:
+Immune: 0%
+Super resistant: 25%
+Resistant: 50%
+Slightly resistant: 75% 
+Normal: 100%
+Slightly weak: 125%
+Weak: 150%
+Very weak: 200%
