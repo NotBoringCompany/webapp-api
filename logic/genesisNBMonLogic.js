@@ -113,17 +113,21 @@ const generalConfig = async () => {
 		const now = moment().unix();
 		const publicOpenAt = parseInt(process.env.PUBLIC_MINT_TIME_UNIX);
 		const whitelistOpenAt = parseInt(process.env.WHITELIST_MINT_TIME_UNIX);
+		const mintingCloseAt = parseInt(process.env.CLOSE_MINT_TIME_UNIX);
 
-		const isWhitelistOpen = now >= whitelistOpenAt;
-		const isPublicOpen = now >= publicOpenAt;
+		const isWhitelistOpen = now >= whitelistOpenAt && now < mintingCloseAt;
+		const isPublicOpen = now >= publicOpenAt && now < mintingCloseAt;
+		const isMintingClose = now > mintingCloseAt;
 
 		const supplies = { haveBeenMinted, supplyLimit };
 		const timeStamps = {
 			now,
 			publicOpenAt,
 			whitelistOpenAt,
+			mintingCloseAt,
 			isWhitelistOpen,
 			isPublicOpen,
+			isMintingClose,
 		};
 
 		return { timeStamps, supplies };

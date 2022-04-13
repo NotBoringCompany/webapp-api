@@ -21,9 +21,7 @@ const paymentReceived = async (req, res, next) => {
 			if (
 				ethValueDecimal === mintingPrice &&
 				txReceipt.to === ethTransactionWalletAddress &&
-				txReceipt.from.toLowerCase() === customerWalletAddress
-				// for some reason customer's wallet address
-				//sent from client (Moralis, FE) is only in lowercase
+				txReceipt.from.toLowerCase() === customerWalletAddress.toLowerCase()
 			) {
 				next();
 			} else {
