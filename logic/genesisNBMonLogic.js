@@ -135,7 +135,7 @@ const generalConfig = async () => {
 const config = async (address) => {
 	try {
 		const generalConfigs = await generalConfig();
-		const { isWhitelistOpen, isPublicOpen } = generalConfigs;
+		const { isWhitelistOpen, isPublicOpen } = generalConfigs.timeStamps;
 		const isWhitelisted = await genesisContract.whitelisted(address);
 
 		const hasMintedBefore =
