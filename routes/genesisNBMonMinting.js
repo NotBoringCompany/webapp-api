@@ -2,32 +2,29 @@ const express = require("express");
 const router = express.Router();
 
 const genesisMintingLogic = require("../logic/genesisNBMonMintingLogic");
-const mintingTimeAuth = require("../middlewares/mintingTime");
-const requirePaymentAuth = require("../middlewares/requirePayment");
+const { isWhitelistMintingTime } = require("../middlewares/mintingTime");
+const { paymentReceived } = require("../middlewares/requirePayment");
 
 router.get(
-    "/whitelistedMint/:address/:transactionHash", 
-    requirePaymentAuth.paymentReceived, 
-    mintingTimeAuth.isWhitelistMintingTime, 
-    async (req, res) => 
-    {
-        let address = req.params.address;
-        let whitelistedMint = await genesisMintingLogic
-            .whitelistedMint(address)
-            .catch((err) => res.json(err.message));
-        res.json(whitelistedMint);
-})
+	"/whitelistedMint/:address/:transactionHash",
+	paymentReceived,
+	isWhitelistMintingTime,
+	async (req, res) => {
+		let address = req.params.address;
+		let whitelistedMint = await genesisMintingLogic
+			.whitelistedMint(address)
+			.catch((err) => res.json(err.message));
+		res.json(whitelistedMint);
+	}
+);
 
-router.get(
-    "/publicMint/:address/:transactionHash", 
-    requirePaymentAuth.paymentReceived, 
-    mintingTimeAuth.isPublicMintingTime, 
-    async (req, res) => {
-        let address = req.params.address;
-        let publicMint = await genesisMintingLogic
-            .publicMint(address)
-            .catch((err) => res.json(err.message));
-        res.json(publicMint);
-})
+router.post("/publicMint", async (req, res) => {
+	const { address } = req.body;
+
+	let publicMint = await genesisMintingLogic
+		.publicMint(address)
+		.catch((err) => res.json(err.message));
+	res.json(publicMint);
+});
 
 module.exports = router;

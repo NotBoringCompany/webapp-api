@@ -106,22 +106,28 @@ const getOwnerGenesisNBMons = async (address) => {
 const generalConfig = async () => {
 	try {
 		const supplyLimit = 5000; // total number of NBMons that can be minted
-		const haveBeenMinted = parseInt(Number(await genesisContract.totalSupply())); // total number of NBMons that have been minted
+		const haveBeenMinted = parseInt(
+			Number(await genesisContract.totalSupply())
+		); // total number of NBMons that have been minted
 
 		const now = moment().unix();
 		const publicOpenAt = parseInt(process.env.PUBLIC_MINT_TIME_UNIX);
 		const whitelistOpenAt = parseInt(process.env.WHITELIST_MINT_TIME_UNIX);
+		const mintingCloseAt = parseInt(process.env.CLOSE_MINT_TIME_UNIX);
 
-		const isWhitelistOpen = now >= whitelistOpenAt;
-		const isPublicOpen = now >= publicOpenAt;
+		const isWhitelistOpen = now >= whitelistOpenAt && now < mintingCloseAt;
+		const isPublicOpen = now >= publicOpenAt && now < mintingCloseAt;
+		const isMintingClose = now > mintingCloseAt;
 
 		const supplies = { haveBeenMinted, supplyLimit };
 		const timeStamps = {
 			now,
 			publicOpenAt,
 			whitelistOpenAt,
+			mintingCloseAt,
 			isWhitelistOpen,
 			isPublicOpen,
+			isMintingClose,
 		};
 
 		return { timeStamps, supplies };
@@ -133,10 +139,11 @@ const generalConfig = async () => {
 const config = async (address) => {
 	try {
 		const generalConfigs = await generalConfig();
-		const { isWhitelistOpen, isPublicOpen } = generalConfigs;
+		const { isWhitelistOpen, isPublicOpen } = generalConfigs.timeStamps;
 		const isWhitelisted = await genesisContract.whitelisted(address);
 
-		const hasMintedBefore = await genesisContract.amountMinted(address) === 1 ? true : false;
+		const hasMintedBefore =
+			(await genesisContract.amountMinted(address)) === 1 ? true : false;
 		let canMint = false;
 
 		if (isWhitelisted) {
@@ -155,24 +162,10 @@ const config = async (address) => {
 	}
 };
 
-const getSupplies = async () => {
-	try {
-		const supplyLimit = 5000; // total number of NBMons that can be minted
-		const haveBeenMinted = parseInt(Number(await genesisContract.totalSupply())); // total number of NBMons that have been minted
-
-		// const remainingSupply = supplyLimit - parseInt(Number(totalSupply));
-
-		return { haveBeenMinted, supplyLimit };
-	} catch (err) {
-		return err;
-	}
-};
-
 module.exports = {
 	getGenesisNBMon,
 	getOwnerGenesisNBMonIDs,
 	getOwnerGenesisNBMons,
-	getSupplies,
 	config,
 	generalConfig,
 };
