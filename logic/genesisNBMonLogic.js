@@ -47,14 +47,19 @@ const getGenesisNBMon = async (id) => {
 		 */
 
 		console.log(nbmon[5][0]);
+		const firstType = nbmon[6][0] === undefined ? null : nbmon[6][0];
+		const secondType = nbmon[6][1] === undefined ? null : nbmon[6][1];
+		const firstPassive = nbmon[8][0] === undefined ? null : nbmon[8][0];
+		const secondPassive = nbmon[8][1] === undefined ? null : nbmon[8][1];
+		const types = [firstType, secondType];
+		const passives = [firstPassive, secondPassive];
 		nbmonObj["gender"] = nbmon[5][0] === undefined ? null : nbmon[5][0];
 		nbmonObj["rarity"] = nbmon[5][1] === undefined ? null : nbmon[5][1];
 		nbmonObj["mutation"] = nbmon[5][2] === undefined ? null : nbmon[5][2];
 		nbmonObj["species"] = nbmon[5][3] === undefined ? null : nbmon[5][3];
 		nbmonObj["genera"] = nbmon[5][4] === undefined ? null : nbmon[5][4];
 		nbmonObj["fertility"] = nbmon[5][5] === undefined ? null : nbmon[5][5];
-		nbmonObj["firstType"] = nbmon[6][0] === undefined ? null : nbmon[6][0];
-		nbmonObj["secondType"] = nbmon[6][1] === undefined ? null : nbmon[6][1];
+		nbmonObj["types"] = types;
 		nbmonObj["healthPotential"] =
 			nbmon[7][0] === undefined ? null : nbmon[7][0];
 		nbmonObj["energyPotential"] =
@@ -66,8 +71,7 @@ const getGenesisNBMon = async (id) => {
 		nbmonObj["spAtkPotential"] = nbmon[7][4] === undefined ? null : nbmon[7][4];
 		nbmonObj["spDefPotential"] = nbmon[7][5] === undefined ? null : nbmon[7][5];
 		nbmonObj["speedPotential"] = nbmon[7][6] === undefined ? null : nbmon[7][6];
-		nbmonObj["firstPassive"] = nbmon[8][0] === undefined ? null : nbmon[8][0];
-		nbmonObj["secondPassive"] = nbmon[8][1] === undefined ? null : nbmon[8][1];
+		nbmonObj["passives"] = passives;
 		nbmonObj["isEgg"] = nbmon[9];
 
 		return nbmonObj;
