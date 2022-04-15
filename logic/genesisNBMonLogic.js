@@ -116,7 +116,7 @@ const generalConfig = async () => {
 
 		const isWhitelistOpen = now >= whitelistOpenAt && now < mintingCloseAt;
 		const isPublicOpen = now >= publicOpenAt && now < mintingCloseAt;
-		const isMintingClose = now > mintingCloseAt;
+		const isMintingEnded = now > mintingCloseAt;
 
 		const supplies = { haveBeenMinted, supplyLimit };
 		const timeStamps = {
@@ -126,7 +126,7 @@ const generalConfig = async () => {
 			mintingCloseAt,
 			isWhitelistOpen,
 			isPublicOpen,
-			isMintingClose,
+			isMintingEnded,
 		};
 
 		return { timeStamps, supplies };
