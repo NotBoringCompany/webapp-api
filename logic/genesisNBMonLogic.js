@@ -25,7 +25,7 @@ const getGenesisNBMon = async (id) => {
 
 		// calculate if nbmon is hatchable or not
 		let now = moment().unix();
-		let hatchableTime = ParseInt(Number(nbmon[2])) + ParseInt(Number(nbmon[4]));
+		let hatchableTime = parseInt(Number(nbmon[2])) + parseInt(Number(nbmon[4]));
 
 		nbmonObj["nbmonId"] = parseInt(Number(nbmon[0]));
 		nbmonObj["owner"] = nbmon[1];
@@ -37,7 +37,7 @@ const getGenesisNBMon = async (id) => {
 			nbmonObj["isHatchable"] = now >= hatchableTime;
 		} else {
 			nbmonObj["hatchedAt"] = parseInt(Number(nbmon[2]));
-			nbmonObj["isHatchable"] = "false"
+			nbmonObj["isHatchable"] = false;
 		}
 		nbmonObj["transferredAt"] = parseInt(Number(nbmon[3]));
 
