@@ -109,7 +109,6 @@ const generalConfig = async () => {
 		const haveBeenMinted = parseInt(
 			Number(await genesisContract.totalSupply())
 		); // total number of NBMons that have been minted
-
 		const now = moment().unix();
 		const publicOpenAt = parseInt(process.env.PUBLIC_MINT_TIME_UNIX);
 		const whitelistOpenAt = parseInt(process.env.WHITELIST_MINT_TIME_UNIX);
@@ -117,7 +116,7 @@ const generalConfig = async () => {
 
 		const isWhitelistOpen = now >= whitelistOpenAt && now < mintingCloseAt;
 		const isPublicOpen = now >= publicOpenAt && now < mintingCloseAt;
-		const isMintingClose = now > mintingCloseAt;
+		const isMintingEnded = now > mintingCloseAt;
 
 		const supplies = { haveBeenMinted, supplyLimit };
 		const timeStamps = {
@@ -127,7 +126,7 @@ const generalConfig = async () => {
 			mintingCloseAt,
 			isWhitelistOpen,
 			isPublicOpen,
-			isMintingClose,
+			isMintingEnded,
 		};
 
 		return { timeStamps, supplies };
@@ -140,18 +139,21 @@ const config = async (address) => {
 	try {
 		const generalConfigs = await generalConfig();
 		const { isWhitelistOpen, isPublicOpen } = generalConfigs.timeStamps;
+		const { haveBeenMinted, supplyLimit } = generalConfigs.supplies;
 		const isWhitelisted = await genesisContract.whitelisted(address);
 
 		const hasMintedBefore =
 			(await genesisContract.amountMinted(address)) === 1 ? true : false;
 		let canMint = false;
 
-		if (isWhitelisted) {
-			if (isWhitelistOpen && !hasMintedBefore) canMint = true;
-			else canMint = false;
-		} else {
-			if (isPublicOpen && !hasMintedBefore) canMint = true;
-			else canMint = false;
+		if (haveBeenMinted < supplyLimit) {
+			if (isWhitelisted) {
+				if (isWhitelistOpen && !hasMintedBefore) canMint = true;
+				else canMint = false;
+			} else {
+				if (isPublicOpen && !hasMintedBefore) canMint = true;
+				else canMint = false;
+			}
 		}
 
 		const status = { address, canMint, isWhitelisted, hasMintedBefore };

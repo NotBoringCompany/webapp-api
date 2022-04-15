@@ -17,14 +17,16 @@ const paymentReceived = async (req, res, next) => {
 		if (txReceipt && txReceipt.blockNumber) {
 			// ensures that the user has actually sent the correct amount (minting price) to proceed.
 			if (
-				ethers.utils.formatEther(txReceipt.value) === mintingPrice &&
+				parseFloat(ethers.utils.formatEther(txReceipt.value)) ===
+					mintingPrice &&
 				txReceipt.to === receiverAddress &&
 				txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 			) {
 				next();
 			} else {
 				res.status(403).json({
-					errorMessage: "User did not pay minting price or to or from address is wrong. Please check again."
+					errorMessage:
+						"User did not pay minting price or to or from address is wrong. Please check again.",
 				});
 			}
 		} else {
@@ -32,14 +34,14 @@ const paymentReceived = async (req, res, next) => {
 			// this code is only for safety measures.
 			res.status(403).json({
 				errorMessage:
-					"Transaction hash provided is either invalid or not minted yet. Please check again later."
+					"Transaction hash provided is either invalid or not minted yet. Please check again later.",
 			});
 		}
 	} catch (err) {
 		res.status(403).json({
 			errorMessageFromBackend: err.message,
 			errorMessage:
-				"Transaction hash provided is either invalid or not minted yet. Please check again later."
+				"Transaction hash provided is either invalid or not minted yet. Please check again later.",
 		});
 	}
 };
