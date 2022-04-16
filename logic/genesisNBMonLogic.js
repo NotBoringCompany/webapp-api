@@ -45,8 +45,6 @@ const getGenesisNBMon = async (id) => {
 		/**
 		 * @dev Will most likely only show when hatched, hence the extra check for null values.
 		 */
-
-		console.log(nbmon[5][0]);
 		const firstType = nbmon[6][0] === undefined ? null : nbmon[6][0];
 		const secondType = nbmon[6][1] === undefined ? null : nbmon[6][1];
 		const firstPassive = nbmon[8][0] === undefined ? null : nbmon[8][0];
