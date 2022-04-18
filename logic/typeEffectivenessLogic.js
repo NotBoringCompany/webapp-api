@@ -48,24 +48,19 @@ const getAttackEffectiveness = async (id, isGenesis) => {
 
         // defense and attack effectiveness are stored in separate databases
         const attackQuery = new Moralis.Query("Types_Attack");
-        let firstTypeStrongAgainst = {};
-        let firstTypeWeakAgainst = {};
-        let firstTypeNeutralAgainst = {};
-        let secondTypeStrongAgainst = {};
-        let secondTypeWeakAgainst = {};
-        let secondTypeNeutralAgainst = {};
 
         let nbmonStrongAgainst = [];
         let nbmonWeakAgainst = [];
-
+        
+        // if nbmon is genesis, we use genesisContract.
         if (isGenesis === "true") {
             const nbmon = await genesisContract.getGenesisNBMon(id);
 
-            // if the nbmon is still an egg, the first and second type is still undefined.
+            // if the nbmon is still an egg, the first and second types are still undefined.
             let firstType = nbmon[6][0] === undefined ? null : nbmon[6][0];
             let secondType = nbmon[6][1] === undefined ? null : nbmon[6][1];
 
-            // if both first and second type exists
+            // if both first and second types exist
             if (firstType !== undefined && secondType !== undefined) {
                 for (let i = 0; i < allTypes.length; i++) {
                     let firstTypeAttackPipeline = [
@@ -88,17 +83,31 @@ const getAttackEffectiveness = async (id, isGenesis) => {
                         nbmonWeakAgainst.push(allTypes[i]);
                     }
                 }
-                return {
-                    'Strong against': nbmonStrongAgainst,
-                    'Weak against': nbmonWeakAgainst
-                }
             // if first type exists but second type doesn't
             } else if (firstType !== undefined && secondType === undefined) {
-                return "Only first type";
+                for (let i = 0; i < allTypes.length; i++) {
+                    let firstTypeAttackPipeline = [
+                        { match: { Attacking_Type: firstType, Receiving_Type: allTypes[i] } },
+                        { project: { _id: 0, Attacking_Type: 1, Receiving_Type: 1, Effectiveness: 1 } }
+                    ];
+
+                    const firstTypeAttackAggRes = await attackQuery.aggregate(firstTypeAttackPipeline);
+
+                    if (firstTypeAttackAggRes[0]["Effectiveness"] > 1) {
+                        nbmonStrongAgainst.push(allTypes[i]);
+                    } else if (firstTypeAttackAggRes[0]["Effectiveness"] < 1) {
+                        nbmonWeakAgainst.push(allTypes[i]);
+                    }
+                }
             // if the nbmon is still an egg, both first and second type will be undefined.
             // this doesn't check if first type doesn't exist and second type exists since that would never happen.
             } else {
-                return "Still an egg";
+                return "Still an egg. Please hatch the NBMon to show its attack effectiveness.";
+            }
+
+            return {
+                'Strong against': nbmonStrongAgainst,
+                'Weak against': nbmonWeakAgainst
             }
         // if nbmon is not genesis, then we will use the normal nbmon contract.
         } else {
