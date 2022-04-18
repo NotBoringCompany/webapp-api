@@ -10,8 +10,10 @@ app.use(express.json());
 
 const genesisNBMon = require('./routes/genesisNBMon');
 const genesisNBMonMinting = require('./routes/genesisNBMonMinting');
+const typeEffectiveness = require('./routes/typeEffectiveness');
 
 app.use('/genesisNBMon', genesisNBMon);
 app.use('/genesisNBMonMinting', genesisNBMonMinting);
+app.use('/typeEffectiveness', typeEffectiveness);
 
 app.listen(port, () => console.log(`listening from port ${port}`));
