@@ -55,7 +55,7 @@ const getAttackEffectiveness = async (firstType, secondType, isGenesis) => {
         // if nbmon is genesis, we use genesisContract.
         if (isGenesis === "true") {
             // if both first and second types exist
-            if (firstType !== undefined && secondType !== undefined) {
+            if (firstType !== null && secondType !== null) {
                 for (let i = 0; i < allTypes.length; i++) {
                     let firstTypeAttackPipeline = [
                         { match: { Attacking_Type: firstType, Receiving_Type: allTypes[i] } },
@@ -78,7 +78,7 @@ const getAttackEffectiveness = async (firstType, secondType, isGenesis) => {
                     }
                 }
             // if first type exists but second type doesn't
-            } else if (firstType !== undefined && secondType === undefined) {
+            } else if (firstType !== null && secondType === null) {
                 for (let i = 0; i < allTypes.length; i++) {
                     let firstTypeAttackPipeline = [
                         { match: { Attacking_Type: firstType, Receiving_Type: allTypes[i] } },
@@ -93,7 +93,7 @@ const getAttackEffectiveness = async (firstType, secondType, isGenesis) => {
                         nbmonWeakAgainst.push(allTypes[i]);
                     }
                 }
-            // if the nbmon is still an egg, both first and second type will be undefined.
+            // if the nbmon is still an egg, both first and second type will be null.
             // this doesn't check if first type doesn't exist and second type exists since that would never happen.
             } else {
                 return "Still an egg. Please hatch the NBMon to show its attack effectiveness.";
@@ -125,7 +125,7 @@ const getDefenseEffectiveness = async (firstType, secondType, isGenesis) => {
 
         if (isGenesis === "true") {
             // if both first and second types exist
-            if (firstType !== undefined && secondType !== undefined) {
+            if (firstType !== null && secondType !== null) {
                 for (let i = 0; i < allTypes.length; i++) {
                     let firstTypeDefensePipeline = [
                         { match: { Receiving_Type: firstType, Attacking_Type: allTypes[i] } },
@@ -148,7 +148,7 @@ const getDefenseEffectiveness = async (firstType, secondType, isGenesis) => {
                     }
                 }
             // if nbmon only has one type
-            } else if (firstType !== undefined && secondType === undefined) {
+            } else if (firstType !== null && secondType === null) {
                 for (let i = 0; i < allTypes.length; i++) {
                     let firstTypeDefensePipeline = [
                         { match: { Receiving_Type: firstType, Attacking_Type: allTypes[i] } },
@@ -163,7 +163,7 @@ const getDefenseEffectiveness = async (firstType, secondType, isGenesis) => {
                         nbmonVulnerableTo.push(allTypes[i]);
                     }
                 }
-            // if the nbmon is still an egg, both first and second type will be undefined.
+            // if the nbmon is still an egg, both first and second type will be null.
             // this doesn't check if first type doesn't exist and second type exists since that would never happen.
             } else {
                 return "Still an egg. Please hatch the NBMon to show its defense effectiveness.";
