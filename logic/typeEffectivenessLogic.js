@@ -1,27 +1,9 @@
-const ethers = require("ethers");
 const Moralis = require('moralis/node');
-const fs = require("fs");
-const path = require("path");
 
 // Moralis credentials
 const serverUrl = process.env.MORALIS_SERVERURL;
 const appId = process.env.MORALIS_APPID;
 const masterKey = process.env.MORALIS_MASTERKEY;
-
-const moralisAPINode = process.env.MORALIS_APINODE;
-// rinkeby URL connected with Moralis
-const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
-const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
-
-const genesisNBMonABI = fs.readFileSync(
-	path.resolve(__dirname, "../abi/genesisNBMon.json")
-);
-const genesisABI = JSON.parse(genesisNBMonABI);
-const genesisContract = new ethers.Contract(
-	process.env.CONTRACT_ADDRESS,
-	genesisABI,
-	customHttpProvider
-);
 
 let allTypes = [
     "Ordinary", 
