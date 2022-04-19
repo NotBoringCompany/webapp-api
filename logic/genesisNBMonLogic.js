@@ -49,8 +49,8 @@ const getGenesisNBMon = async (id) => {
 		const firstType = nbmon[6][0] === undefined ? null : nbmon[6][0];
 		const secondType = nbmon[6][1] === undefined ? null : nbmon[6][1];
 		// calculates typeEffectiveness
-		const attackEff = await getAttackEffectiveness(id, "true");
-		const defenseEff = await getDefenseEffectiveness(id, "true");
+		const attackEff = await getAttackEffectiveness(firstType, secondType, "true");
+		const defenseEff = await getDefenseEffectiveness(firstType, secondType, "true");
 		nbmonObj["strongAgainst"] = attackEff["Strong against"];
 		nbmonObj["weakAgainst"] = attackEff["Weak against"];
 		nbmonObj["resistantTo"] = defenseEff["Resistant to"];

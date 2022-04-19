@@ -42,7 +42,7 @@ let allTypes = [
 ];
 
 // get nbmon's strengths and weaknesses against other types when attacking
-const getAttackEffectiveness = async (id, isGenesis) => {
+const getAttackEffectiveness = async (firstType, secondType, isGenesis) => {
     try {
         await Moralis.start({ serverUrl, appId, masterKey });
 
@@ -54,12 +54,6 @@ const getAttackEffectiveness = async (id, isGenesis) => {
         
         // if nbmon is genesis, we use genesisContract.
         if (isGenesis === "true") {
-            const nbmon = await genesisContract.getGenesisNBMon(id);
-
-            // if the nbmon is still an egg, the first and second types are still undefined.
-            let firstType = nbmon[6][0] === undefined ? null : nbmon[6][0];
-            let secondType = nbmon[6][1] === undefined ? null : nbmon[6][1];
-
             // if both first and second types exist
             if (firstType !== undefined && secondType !== undefined) {
                 for (let i = 0; i < allTypes.length; i++) {
@@ -120,7 +114,7 @@ const getAttackEffectiveness = async (id, isGenesis) => {
 }
 
 // get nbmon's defense resistance and vulnerability when defending
-const getDefenseEffectiveness = async (id, isGenesis) => {
+const getDefenseEffectiveness = async (firstType, secondType, isGenesis) => {
     try {
         await Moralis.start({ serverUrl, appId, masterKey });
 
@@ -130,12 +124,6 @@ const getDefenseEffectiveness = async (id, isGenesis) => {
         let nbmonVulnerableTo = [];
 
         if (isGenesis === "true") {
-            const nbmon = await genesisContract.getGenesisNBMon(id);
-
-            // if the nbmon is still an egg, the first and second types are still undefined.
-            let firstType = nbmon[6][0] === undefined ? null : nbmon[6][0];
-            let secondType = nbmon[6][1] === undefined ? null : nbmon[6][1];
-
             // if both first and second types exist
             if (firstType !== undefined && secondType !== undefined) {
                 for (let i = 0; i < allTypes.length; i++) {
