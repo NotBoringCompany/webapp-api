@@ -8,6 +8,7 @@ const moralisAPINode = process.env.MORALIS_APINODE;
 const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
+const { getAttackEffectiveness, getDefenseEffectiveness } = require("../logic/typeEffectivenessLogic");
 const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")
 );
@@ -47,10 +48,18 @@ const getGenesisNBMon = async (id) => {
 		 */
 		const firstType = nbmon[6][0] === undefined ? null : nbmon[6][0];
 		const secondType = nbmon[6][1] === undefined ? null : nbmon[6][1];
-		const firstPassive = nbmon[8][0] === undefined ? null : nbmon[8][0];
-		const secondPassive = nbmon[8][1] === undefined ? null : nbmon[8][1];
-		const types = [firstType, secondType];
-		const passives = [firstPassive, secondPassive];
+		// calculates typeEffectiveness
+		const attackEff = await getAttackEffectiveness(id, "true");
+		const defenseEff = await getDefenseEffectiveness(id, "true");
+		nbmonObj["strongAgainst"] = attackEff["Strong against"];
+		nbmonObj["weakAgainst"] = attackEff["Weak against"];
+		nbmonObj["resistantTo"] = defenseEff["Resistant to"];
+		nbmonObj["vulnerableTo"] = defenseEff["Vulnerable to"];
+
+		firstPassive = nbmon[8][0] === undefined ? null : nbmon[8][0];
+		secondPassive = nbmon[8][1] === undefined ? null : nbmon[8][1];
+		types = [firstType, secondType];
+		passives = [firstPassive, secondPassive];
 		nbmonObj["gender"] = nbmon[5][0] === undefined ? null : nbmon[5][0];
 		nbmonObj["rarity"] = nbmon[5][1] === undefined ? null : nbmon[5][1];
 		nbmonObj["mutation"] = nbmon[5][2] === undefined ? null : nbmon[5][2];
