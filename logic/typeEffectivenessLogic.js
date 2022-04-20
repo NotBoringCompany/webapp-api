@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Moralis = require('moralis/node');
 
 // Moralis credentials

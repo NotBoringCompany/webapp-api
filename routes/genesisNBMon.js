@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const genesisLogic = require("../logic/genesisNBMonLogic");
+const { randomizeGenesisMutation } = require("../calculations/genesisStatRandomizer");
 
 router.get("/getGenesisNBMon/:id", async (req, res) => {
 	let id = req.params.id;
