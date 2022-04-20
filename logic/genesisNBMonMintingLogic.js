@@ -1,7 +1,7 @@
 const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
-const Moralis = require("moralis/node");
+const { addToActivities } = require("./activities");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
@@ -104,46 +104,4 @@ const publicMint = async (address) => {
 	}
 };
 
-const addToActivities = async (
-	transactionHash,
-	transactionType,
-	network,
-	value
-) => {
-	try {
-		console.log("querying EthNFTTransfers...");
-		const ethNFTTransfers = Moralis.Object.extend("EthNFTTransfers");
-		const ethNFTQuery = new Moralis.Query(ethNFTTransfers);
-
-		ethNFTQuery.equalTo("transaction_hash", transactionHash);
-		const queryResult = await ethNFTQuery.first({ useMasterKey: true });
-
-		const jsonResult = JSON.parse(JSON.stringify(queryResult));
-		const { from_address, to_address, createdAt } = jsonResult;
-
-		console.log("result:");
-		console.log(jsonResult);
-		console.log("***********************");
-
-		//add to our custom created Class "NFTTransfers", so can be displayed as activities in the frontend
-		const NFTTransfer = Moralis.Object.extend("NFTTransfers");
-		const newTransfer = new NFTTransfer();
-
-		newTransfer.set("address_from", from_address);
-		newTransfer.set("address_to", to_address);
-		newTransfer.set("transaction_hash", transactionHash);
-		newTransfer.set("transaction_type", transactionType);
-		newTransfer.set("network", network);
-		newTransfer.set("value", value.toString());
-		newTransfer.set("timestamp", createdAt);
-
-		//Saving user master key (due to CLP being only "read" for only public)
-		await newTransfer.save(null, { useMasterKey: true });
-
-		console.log("saved to NFTTransfers - can be used as activities!");
-	} catch (err) {
-		return err;
-	}
-};
-
-module.exports = { whitelistedMint, publicMint, addToActivities };
+module.exports = { whitelistedMint, publicMint };
