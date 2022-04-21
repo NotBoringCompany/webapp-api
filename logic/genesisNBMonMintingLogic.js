@@ -45,7 +45,7 @@ const whitelistedMint = async (address) => {
 		let response = await signer.sendTransaction(unsignedTx);
 		await response.wait();
 
-		//Turn response to string, and turn it back to JSON
+		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
 		const jsonResponse = JSON.parse(JSON.stringify(response));
 		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
@@ -89,7 +89,12 @@ const publicMint = async (address) => {
 			);
 		let response = await signer.sendTransaction(unsignedTx);
 		await response.wait();
+
+		//Turns response to string, and turn it back to JSON
+		//This is done because for some reason response is a ParseObject and not a JSON
 		const jsonResponse = JSON.parse(JSON.stringify(response));
+		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
+		//Parseplatform is used by Moralis' DB
 
 		//Upon successful minting
 		await addToActivities(
