@@ -77,7 +77,7 @@ const addToActivities = async (
 		const jsonResult = JSON.parse(JSON.stringify(queryResult));
 		const { from_address, to_address, block_timestamp } = jsonResult;
 
-		//add to our custom created Class "NFTTransfers", so can be displayed as activities in the frontend
+		//insert into our custom-made Class "NFTTransfers", so can be displayed as activities in the frontend
 		const NFTTransfer = Moralis.Object.extend("NFTTransfers");
 		const newTransfer = new NFTTransfer();
 
