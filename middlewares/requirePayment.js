@@ -3,7 +3,7 @@ const ethers = require("ethers");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
 // address for receiving payment from user
-const receiverAddress = process.env.RECEIVER_ADDRESS;
+const receiverWallet = process.env.RECEIVER_WALLET;
 const mintingPrice = parseFloat(process.env.MINTING_PRICE);
 // rinkeby URL connected with Moralis
 const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
@@ -19,7 +19,7 @@ const paymentReceived = async (req, res, next) => {
 			if (
 				parseFloat(ethers.utils.formatEther(txReceipt.value)) ===
 					mintingPrice &&
-				txReceipt.to === receiverAddress &&
+				txReceipt.to === receiverWallet &&
 				txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 			) {
 				next();
