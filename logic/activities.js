@@ -89,7 +89,7 @@ const addToActivities = async (
 		newTransfer.set("value", value.toString());
 		newTransfer.set("timestamp", block_timestamp);
 
-		//Saving user master key (due to CLP being only "read" for only public)
+		//Saves using master key (due to CLP being only "read" for only public)
 		await newTransfer.save(null, { useMasterKey: true });
 	} catch (err) {
 		return err;
