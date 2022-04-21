@@ -26,8 +26,6 @@ let allTypes = [
 // get nbmon's strengths and weaknesses against other types when attacking
 const getAttackEffectiveness = async (firstType, secondType, isGenesis) => {
     try {
-        await Moralis.start({ serverUrl, appId, masterKey });
-
         // defense and attack effectiveness are stored in separate databases
         const attackQuery = new Moralis.Query("Types_Attack");
 
@@ -98,8 +96,6 @@ const getAttackEffectiveness = async (firstType, secondType, isGenesis) => {
 // get nbmon's defense resistance and vulnerability when defending
 const getDefenseEffectiveness = async (firstType, secondType, isGenesis) => {
     try {
-        await Moralis.start({ serverUrl, appId, masterKey });
-
         const defenseQuery = new Moralis.Query("Types_Defense");
 
         let nbmonResistantTo = [];
