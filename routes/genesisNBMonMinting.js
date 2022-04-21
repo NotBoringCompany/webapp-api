@@ -2,7 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const genesisMintingLogic = require("../logic/genesisNBMonMintingLogic");
-const { isWhitelistMintingTime, isPublicMintingTime, mintingTimeNotClosed } = require("../middlewares/mintingTime");
+const {
+	isWhitelistMintingTime,
+	isPublicMintingTime,
+	mintingTimeNotClosed,
+} = require("../middlewares/mintingTime");
 const { paymentReceived } = require("../middlewares/requirePayment");
 
 router.post(
@@ -32,6 +36,7 @@ router.post(
 			.publicMint(purchaserAddress)
 			.catch((err) => res.json(err.message));
 		res.json(publicMint);
-});
+	}
+);
 
 module.exports = router;
