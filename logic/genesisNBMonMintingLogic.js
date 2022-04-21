@@ -1,7 +1,7 @@
 const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
-const { addToActivities } = require("./activities");
+const { addToActivities } = require("./activitiesLogic");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
