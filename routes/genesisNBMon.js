@@ -43,9 +43,9 @@ router.get("/config", async (_, res) => {
 });
 
 router.get("/getTypes/:genus", async (req, res) => {
-	let genusParam = req.params.genus;
-	let types = await genesisLogic.getGenesisNBMonTypes(genusParam).catch((err) => res.json(err));
+	let genus = req.params.genus;
+	let types = await genesisLogic.getGenesisNBMonTypes(genus).catch((err) => res.json(err));
 	res.json(types);
-})
+});
 
 module.exports = router;

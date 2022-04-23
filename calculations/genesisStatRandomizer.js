@@ -1,10 +1,5 @@
 const Moralis = require('moralis/node');
 
-// Moralis credentials
-const serverUrl = process.env.MORALIS_SERVERURL;
-const appId = process.env.MORALIS_APPID;
-const masterKey = process.env.MORALIS_MASTERKEY;
-
 /**
  * @dev genesisStatRandomizer randomizes the stats for genesis NBMons when hatching.
  * This will be different from the standard NBMon stat randomizer since Genesis NBMons
@@ -85,10 +80,9 @@ const randomizeGenesisMutation = async (genusParam) => {
         // 0.5% chance of mutation for genesis nbmons
         let mutationRand = Math.floor(Math.random() * 1000) + 1;
 
-        if (mutationRand >= 0) {
+        if (mutationRand >= 996) {
             const genus = genusParam;
         
-            await Moralis.start({ serverUrl, appId, masterKey });
             const mutationQuery = new Moralis.Query("Mutations");
 
             const mutationPipeline = [
@@ -167,8 +161,6 @@ const randomizeGenesisPotential = async (rarityParam) => {
 
 const randomizeGenesisPassives = async () => {
     try {
-        await Moralis.start({ serverUrl, appId, masterKey });
-
         const passiveQuery = await new Moralis.Query("Passives");
 
         const passivePipeline = [

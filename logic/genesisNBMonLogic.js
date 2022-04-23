@@ -1,3 +1,4 @@
+const Moralis = require("moralis/node");
 const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
@@ -131,7 +132,7 @@ const getGenesisNBMonTypes = async (genusParam) => {
 
 		const typesAggRes = await typesQuery.aggregate(typesPipeline);
 
-		return typesAggRes;
+		return typesAggRes[0]["Types"];
 
 	} catch (err) {
 		return err;
