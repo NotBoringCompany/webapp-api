@@ -1,4 +1,3 @@
-require('dotenv').config();
 const Moralis = require('moralis/node');
 
 // Moralis credentials
@@ -81,13 +80,13 @@ const randomizeGenesisGenus = async () => {
 // there is a 0.5% chance of having a genesis NBMon mutated.
 // if mutated, the nbmon will get one extra type move set.
 // the nbmon cannot get a mutation type which consists of one of its own.
-const randomizeGenesisMutation = async () => {
+const randomizeGenesisMutation = async (genusParam) => {
     try {
         // 0.5% chance of mutation for genesis nbmons
         let mutationRand = Math.floor(Math.random() * 1000) + 1;
 
         if (mutationRand >= 0) {
-            const genus = randomizeGenesisGenus();
+            const genus = genusParam;
         
             await Moralis.start({ serverUrl, appId, masterKey });
             const mutationQuery = new Moralis.Query("Mutations");
@@ -112,9 +111,9 @@ const randomizeGenesisMutation = async () => {
 
 // randomizing potential for genesis NBMons.
 // note that genesis NBMons will have a higher chance for getting better potential.
-const randomizeGenesisPotential = async () => {
+const randomizeGenesisPotential = async (rarityParam) => {
     try {
-        const rarity = randomizeGenesisRarity();
+        const rarity = rarityParam;
         let potentialArray = [];
 
         switch (rarity) {

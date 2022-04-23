@@ -120,6 +120,24 @@ const getOwnerGenesisNBMons = async (address) => {
 	}
 };
 
+const getGenesisNBMonTypes = async (genusParam) => {
+	try {
+		const typesQuery = new Moralis.Query("NBMon_Data");
+
+		const typesPipeline = [
+			{ match: { Genus: genusParam } },
+			{ project: { _id: 0, Types: 1 } }
+		];
+
+		const typesAggRes = await typesQuery.aggregate(typesPipeline);
+
+		return typesAggRes;
+
+	} catch (err) {
+		return err;
+	}
+}
+
 const generalConfig = async () => {
 	try {
 		const supplyLimit = 5000; // total number of NBMons that can be minted
@@ -187,4 +205,5 @@ module.exports = {
 	getOwnerGenesisNBMons,
 	config,
 	generalConfig,
+	getGenesisNBMonTypes
 };
