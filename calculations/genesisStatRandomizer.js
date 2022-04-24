@@ -117,30 +117,35 @@ const randomizeGenesisPotential = async (rarityParam) => {
                     let potentialRand = Math.floor(Math.random() * 25);
                     potentialArray[i] = potentialRand;
                 }
+                break;
             case "Uncommon":
                 for (let i = 0; i <= 6; i++) {
                     // potential for each stat is between 10 - 30
                     let potentialRand = Math.floor(Math.random() * 21) + 10;
                     potentialArray[i] = potentialRand;
                 }
+                break;
             case "Rare":
                 for (let i = 0; i <= 6; i++) {
                     // potential for each stat is between 20 - 40
                     let potentialRand = Math.floor(Math.random() * 21) + 20;
                     potentialArray[i] = potentialRand;
                 }
+                break;
             case "Epic":
                 for (let i = 0; i <= 6; i++) {
                     // potential for each stat is between 30 - 50
                     let potentialRand = Math.floor(Math.random() * 21) + 30;
                     potentialArray[i] = potentialRand;
                 }
+                break;
             case "Legendary":
                 for (let i = 0; i <= 6; i++) {
                     // potential for each stat is between 40 - 55
                     let potentialRand = Math.floor(Math.random() * 16) + 40;
                     potentialArray[i] = potentialRand;
                 }
+                break;
             case "Mythical":
                 for (let i = 0; i <= 6; i++) {
                     // potential for each stat is between 50 - 65
@@ -153,7 +158,9 @@ const randomizeGenesisPotential = async (rarityParam) => {
                         potentialArray[maximizerRand] = 65;
                     }
                 }
+                break;
         }
+        return potentialArray;
     } catch (err) {
         return err;
     }
@@ -176,10 +183,7 @@ const randomizeGenesisPassives = async () => {
             passiveRandTwo = Math.floor(Math.random() * passiveAggRes.length);
         } while (passiveRandTwo === passiveRand);
 
-        return {
-            "First passive": passiveAggRes[passiveRand]["Name"],
-            "Second passive": passiveAggRes[passiveRandTwo]["Name"]
-        }
+        return [passiveAggRes[passiveRand]["Name"], passiveAggRes[passiveRandTwo]["Name"]];
     } catch (err) {
         return err;
     }

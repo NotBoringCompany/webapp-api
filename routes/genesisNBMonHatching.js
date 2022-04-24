@@ -2,8 +2,9 @@ const express = require("express");
 const { randomizeHatchingStats } = require("../logic/genesisNBMonHatchingLogic");
 const router = express.Router();
 
-router.post("/hatchNBMon", async (_, res) => {
-    let hatchNBMon = randomizeHatchingStats();
+router.post("/randomizeHatchingStats", async (_, res) => {
+    let randomizeStats = await randomizeHatchingStats().catch((err) => res.json(err));
+    res.json(randomizeStats);
 });
 
 module.exports = router;
