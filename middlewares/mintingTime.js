@@ -1,4 +1,3 @@
-require('dotenv').config();
 const moment = require("moment");
 
 const whitelistMintingTime = process.env.WHITELIST_MINT_TIME_UNIX;

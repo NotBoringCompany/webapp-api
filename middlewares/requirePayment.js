@@ -1,4 +1,3 @@
-require("dotenv").config();
 const ethers = require("ethers");
 
 const moralisAPINode = process.env.MORALIS_APINODE;

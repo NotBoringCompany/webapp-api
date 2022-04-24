@@ -1,3 +1,4 @@
+const Moralis = require("moralis/node");
 const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
@@ -62,7 +63,13 @@ const getGenesisNBMon = async (id) => {
 		passives = [firstPassive, secondPassive];
 		nbmonObj["gender"] = nbmon[5][0] === undefined ? null : nbmon[5][0];
 		nbmonObj["rarity"] = nbmon[5][1] === undefined ? null : nbmon[5][1];
-		nbmonObj["mutation"] = nbmon[5][2] === undefined ? null : nbmon[5][2];
+
+		// calculation for mutation
+		nbmonObj["mutation"] = nbmon[5][2] === undefined ? null : "Mutated";
+		if (nbmonObj["mutation"] === "Mutated") {
+			nbmonObj["mutationType"] = nbmon[5][2]
+		}
+
 		nbmonObj["species"] = nbmon[5][3] === undefined ? null : nbmon[5][3];
 		nbmonObj["genera"] = nbmon[5][4] === undefined ? null : nbmon[5][4];
 		nbmonObj["fertility"] = nbmon[5][5] === undefined ? null : nbmon[5][5];
@@ -119,6 +126,24 @@ const getOwnerGenesisNBMons = async (address) => {
 		return err;
 	}
 };
+
+const getGenesisNBMonTypes = async (genusParam) => {
+	try {
+		const typesQuery = new Moralis.Query("NBMon_Data");
+
+		const typesPipeline = [
+			{ match: { Genus: genusParam } },
+			{ project: { _id: 0, Types: 1 } }
+		];
+
+		const typesAggRes = await typesQuery.aggregate(typesPipeline);
+
+		return typesAggRes[0]["Types"];
+
+	} catch (err) {
+		return err;
+	}
+}
 
 const generalConfig = async () => {
 	try {
@@ -187,4 +212,5 @@ module.exports = {
 	getOwnerGenesisNBMons,
 	config,
 	generalConfig,
+	getGenesisNBMonTypes
 };

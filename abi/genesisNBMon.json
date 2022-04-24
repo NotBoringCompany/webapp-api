@@ -96,6 +96,32 @@
         "type": "address"
       }
     ],
+    "name": "HatchingAllowed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "HatchingNotAllowed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
     "name": "MintingAllowed",
     "type": "event"
   },
@@ -165,6 +191,19 @@
   },
   {
     "inputs": [],
+    "name": "_hatchingAllowed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "_mintingAllowed",
     "outputs": [
       {
@@ -174,6 +213,39 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_key",
+        "type": "string"
+      },
+      {
+        "internalType": "string[]",
+        "name": "_nbmonStats",
+        "type": "string[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "_types",
+        "type": "string[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_potential",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "_passives",
+        "type": "string[]"
+      }
+    ],
+    "name": "addValidKey",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -243,6 +315,13 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "allowHatching",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -387,6 +466,25 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_key",
+        "type": "string"
+      }
+    ],
+    "name": "checkValidKey",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "currentGenesisNBMonCount",
     "outputs": [
@@ -453,6 +551,13 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "disallowHatching",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -574,29 +679,14 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "_key",
+        "type": "string"
+      },
+      {
         "internalType": "uint256",
         "name": "_nbmonId",
         "type": "uint256"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_nbmonStats",
-        "type": "string[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_types",
-        "type": "string[]"
-      },
-      {
-        "internalType": "uint8[]",
-        "name": "_potential",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_passives",
-        "type": "string[]"
       }
     ],
     "name": "hatchFromEgg",
@@ -856,6 +946,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_key",
+        "type": "string"
+      }
+    ],
+    "name": "removeValidKey",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

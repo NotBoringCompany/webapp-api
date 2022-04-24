@@ -16,11 +16,13 @@ const genesisNBMon = require("./routes/genesisNBMon");
 const genesisNBMonMinting = require("./routes/genesisNBMonMinting");
 const activities = require("./routes/activities");
 const typeEffectiveness = require("./routes/typeEffectiveness");
+const genesisNBMonHatching = require("./routes/genesisNBMonHatching");
 
 app.use("/genesisNBMon", genesisNBMon);
 app.use("/genesisNBMonMinting", genesisNBMonMinting);
 app.use("/activities", activities);
 app.use("/typeEffectiveness", typeEffectiveness);
+app.use("/genesisNBMonHatching", genesisNBMonHatching);
 
 app.listen(port, async () => {
 	console.log(`listening from port ${port}`);

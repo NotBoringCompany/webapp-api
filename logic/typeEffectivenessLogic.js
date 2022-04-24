@@ -1,10 +1,4 @@
 const Moralis = require('moralis/node');
-
-// Moralis credentials
-const serverUrl = process.env.MORALIS_SERVERURL;
-const appId = process.env.MORALIS_APPID;
-const masterKey = process.env.MORALIS_MASTERKEY;
-
 let allTypes = [
     "Ordinary", 
     "Fire", 

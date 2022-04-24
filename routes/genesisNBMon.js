@@ -42,4 +42,10 @@ router.get("/config", async (_, res) => {
 	res.json(config);
 });
 
+router.get("/getTypes/:genus", async (req, res) => {
+	let genus = req.params.genus;
+	let types = await genesisLogic.getGenesisNBMonTypes(genus).catch((err) => res.json(err));
+	res.json(types);
+});
+
 module.exports = router;
