@@ -58,7 +58,10 @@ const whitelistedMint = async (address) => {
 			"eth",
 			process.env.MINTING_PRICE
 		);
-		return response;
+
+		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
+
+		return { nbmonId: mintedId };
 	} catch (err) {
 		return err;
 	}
@@ -103,7 +106,9 @@ const publicMint = async (address) => {
 			"eth",
 			process.env.MINTING_PRICE
 		);
-		return response;
+
+		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
+		return { nbmonId: mintedId };
 	} catch (err) {
 		return err;
 	}
