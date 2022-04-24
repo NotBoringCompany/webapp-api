@@ -26,33 +26,18 @@ const { addToActivities } = require("../logic/activitiesLogic");
 const randomizeHatchingStats = async () => {
     try {
         const key = uuidv4();
-
-        console.log(key);
-
         const signer = new ethers.Wallet(pvtKey, customHttpProvider);
 
-        console.log(signer);
-
         const gender = (await genesisStatRandomizer.randomizeGenesisGender()).toString();
-
-        console.log(gender);
-
         const rarity = (await genesisStatRandomizer.randomizeGenesisRarity()).toString();
         const genus = (await genesisStatRandomizer.randomizeGenesisGenus()).toString();
         const mutation = (await genesisStatRandomizer.randomizeGenesisMutation(genus)).toString();
-
-        console.log(mutation);
-
         const species = "Origin";
         const fertility = "3000";
         const nbmonStats = [gender, rarity, genus, mutation, species, fertility];
         const types = await getGenesisNBMonTypes(genus);
         const potential = await genesisStatRandomizer.randomizeGenesisPotential(rarity);
         const passives = await genesisStatRandomizer.randomizeGenesisPassives();
-
-        console.log(passives);
-
-        console.log("test");
 
         let unsignedTx = await genesisContract
             .populateTransaction.addValidKey(
@@ -64,8 +49,6 @@ const randomizeHatchingStats = async () => {
             );
         let response = await signer.sendTransaction(unsignedTx);
         let minedResponse = await response.wait();
-
-        console.log("a");
 
         //Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
@@ -80,8 +63,6 @@ const randomizeHatchingStats = async () => {
 			"eth",
 			0
 		);
-
-        console.log("b");
 
 		return {
             response: minedResponse,
