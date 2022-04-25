@@ -72,7 +72,7 @@ const getGenesisNBMon = async (id) => {
 		}
 
 		nbmonObj["species"] = nbmon[5][3] === undefined ? null : nbmon[5][3];
-		nbmonObj["genera"] = nbmon[5][4] === undefined ? null : nbmon[5][4];
+		nbmonObj["genus"] = nbmon[5][4] === undefined ? null : nbmon[5][4];
 
 		// calculation for fertility
 		nbmonObj["fertility"] = nbmon[5][5] === undefined ? null : nbmon[5][5];

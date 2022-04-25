@@ -34,7 +34,7 @@ const randomizeHatchingStats = async () => {
         const mutation = (await genesisStatRandomizer.randomizeGenesisMutation(genus)).toString();
         const species = "Origin";
         const fertility = "3000";
-        const nbmonStats = [gender, rarity, genus, mutation, species, fertility];
+        const nbmonStats = [gender, rarity, mutation, species, genus, fertility];
         const types = await getGenesisNBMonTypes(genus);
         const potential = await genesisStatRandomizer.randomizeGenesisPotential(rarity);
         const passives = await genesisStatRandomizer.randomizeGenesisPassives();
