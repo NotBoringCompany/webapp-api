@@ -16,8 +16,7 @@ const paymentReceived = async (req, res, next) => {
 		if (txReceipt && txReceipt.blockNumber) {
 			// ensures that the user has actually sent the correct amount (minting price) to proceed.
 			if (
-				parseFloat(ethers.utils.formatEther(txReceipt.value)) ===
-					mintingPrice &&
+				parseFloat(ethers.utils.formatEther(txReceipt.value)) === mintingPrice &&
 				txReceipt.to === receiverWallet &&
 				txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 			) {
