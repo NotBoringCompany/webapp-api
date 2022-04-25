@@ -3,6 +3,10 @@ const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
 
+const genesisStatRandomizer = require("../calculations/genesisStatRandomizer");
+const { addToActivities } = require("../logic/activitiesLogic");
+const { getGenesisNBMonTypes } = require('./genesisNBMonLogic');
+
 const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
 // rinkeby URL connected with Moralis
@@ -18,16 +22,11 @@ const genesisContract = new ethers.Contract(
 	customHttpProvider
 );
 
-const genesisStatRandomizer = require("../calculations/genesisStatRandomizer");
-const { getGenesisNBMonTypes } = require("./genesisNBMonLogic");
-const { addToActivities } = require("../logic/activitiesLogic");
-
 // hatches the nbmon from an egg and gives it its respective stats
 const randomizeHatchingStats = async () => {
     try {
         const key = uuidv4();
         const signer = new ethers.Wallet(pvtKey, customHttpProvider);
-
         const gender = (await genesisStatRandomizer.randomizeGenesisGender()).toString();
         const rarity = (await genesisStatRandomizer.randomizeGenesisRarity()).toString();
         const genus = (await genesisStatRandomizer.randomizeGenesisGenus()).toString();
@@ -35,6 +34,7 @@ const randomizeHatchingStats = async () => {
         const species = "Origin";
         const fertility = "3000";
         const nbmonStats = [gender, rarity, mutation, species, genus, fertility];
+
         const types = await getGenesisNBMonTypes(genus);
         const potential = await genesisStatRandomizer.randomizeGenesisPotential(rarity);
         const passives = await genesisStatRandomizer.randomizeGenesisPassives();
@@ -73,24 +73,7 @@ const randomizeHatchingStats = async () => {
     }
 }
 
-const getFertilityDeduction = async (rarity) => {
-    switch (rarity) {
-        case "Common":
-            return 1000;
-        case "Uncommon":
-            return 750;
-        case "Rare":
-            return 600;
-        case "Epic":
-            return 500;
-        case "Legendary":
-            return 375;
-        case "Mythical":
-            return 300;
-    }
-}
 
 module.exports = {
-    randomizeHatchingStats,
-    getFertilityDeduction
+    randomizeHatchingStats
 };

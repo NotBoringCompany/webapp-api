@@ -10,7 +10,6 @@ const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinke
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const { getAttackEffectiveness, getDefenseEffectiveness } = require("../logic/typeEffectivenessLogic");
-const { getFertilityDeduction } = require("./genesisNBMonHatchingLogic");
 const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")
 );
@@ -20,6 +19,27 @@ const genesisContract = new ethers.Contract(
 	genesisABI,
 	customHttpProvider
 );
+
+const getFertilityDeduction = async (rarity) => {
+	try {
+		switch (rarity) {
+			case "Common":
+				return 1000;
+			case "Uncommon":
+				return 750;
+			case "Rare":
+				return 600;
+			case "Epic":
+				return 500;
+			case "Legendary":
+				return 375;
+			case "Mythical":
+				return 300;
+		}
+	} catch (err) {
+		return err;
+	}
+};
 
 const getGenesisNBMon = async (id) => {
 	try {
@@ -152,7 +172,7 @@ const getGenesisNBMonTypes = async (genusParam) => {
 	} catch (err) {
 		return err;
 	}
-}
+};
 
 const generalConfig = async () => {
 	try {
@@ -221,5 +241,6 @@ module.exports = {
 	getOwnerGenesisNBMons,
 	config,
 	generalConfig,
-	getGenesisNBMonTypes
+	getGenesisNBMonTypes,
+	getFertilityDeduction
 };
