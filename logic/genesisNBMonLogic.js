@@ -10,6 +10,7 @@ const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinke
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const { getAttackEffectiveness, getDefenseEffectiveness } = require("../logic/typeEffectivenessLogic");
+const { getFertilityDeduction } = require("./genesisNBMonHatchingLogic");
 const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")
 );
@@ -72,7 +73,15 @@ const getGenesisNBMon = async (id) => {
 
 		nbmonObj["species"] = nbmon[5][3] === undefined ? null : nbmon[5][3];
 		nbmonObj["genera"] = nbmon[5][4] === undefined ? null : nbmon[5][4];
+
+		// calculation for fertility
 		nbmonObj["fertility"] = nbmon[5][5] === undefined ? null : nbmon[5][5];
+		if (nbmon[5][1] !== undefined) {
+			nbmonObj["fertilityDeduction"] = await getFertilityDeduction(nbmon[5][1]);
+		} else {
+			nbmonObj["fertilityDeduction"] = null;
+		}
+
 		nbmonObj["types"] = types;
 		nbmonObj["healthPotential"] =
 			nbmon[7][0] === undefined ? null : nbmon[7][0];

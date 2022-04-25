@@ -73,6 +73,24 @@ const randomizeHatchingStats = async () => {
     }
 }
 
+const getFertilityDeduction = async (rarity) => {
+    switch (rarity) {
+        case "Common":
+            return 1000;
+        case "Uncommon":
+            return 750;
+        case "Rare":
+            return 600;
+        case "Epic":
+            return 500;
+        case "Legendary":
+            return 375;
+        case "Mythical":
+            return 300;
+    }
+}
+
 module.exports = {
-    randomizeHatchingStats
+    randomizeHatchingStats,
+    getFertilityDeduction
 };
