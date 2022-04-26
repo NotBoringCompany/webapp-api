@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getAttackEffectiveness, getDefenseEffectiveness } = require("../logic/typeEffectivenessLogic");
+const { getAttackEffectiveness, getDefenseEffectiveness, testQuery } = require("../logic/typeEffectivenessLogic");
 
 router.get("/getAttackEffectiveness/:firstType/:secondType/:isGenesis", async (req, res) => {
     let firstType = req.params.firstType;
@@ -20,5 +20,10 @@ router.get("/getDefenseEffectiveness/:firstType/:secondType/:isGenesis", async (
     let effectiveness = await getDefenseEffectiveness(firstType, secondType, isGenesis).catch((err) => res.json(err.message));
     res.json(effectiveness);
 });
+
+router.get("/testQuery", async (req, res) =>{
+    let test = await testQuery().catch((err) => res.json(err));
+    res.json(test);
+})
 
 module.exports = router;
