@@ -18,6 +18,7 @@
 		"express": "^4.17.3",
 		"moment": "^2.29.2",
 		"moralis": "^1.5.9",
+		"nft.storage": "^6.2.0",
 		"uuid": "^8.3.2"
 	},
 	"devDependencies": {

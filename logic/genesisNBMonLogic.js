@@ -86,9 +86,14 @@ const getGenesisNBMon = async (id) => {
 		nbmonObj["rarity"] = nbmon[5][1] === undefined ? null : nbmon[5][1];
 
 		// calculation for mutation
-		nbmonObj["mutation"] = nbmon[5][2] === undefined ? null : "Mutated";
-		if (nbmonObj["mutation"] === "Mutated") {
-			nbmonObj["mutationType"] = nbmon[5][2]
+		// if still an egg
+		if (nbmon[9] === true) {
+			nbmonObj["mutation"] = "Not mutated";
+			nbmonObj["mutationType"] = null;
+		// if already hatched
+		} else {
+			nbmonObj["mutation"] = nbmon[5][2] === "Not mutated" ? nbmon[5][2] : "Mutated";
+			nbmonObj["mutationType"] = nbmonObj["mutation"] === "Mutated" ? nbmon[5][2] : null;
 		}
 
 		nbmonObj["species"] = nbmon[5][3] === undefined ? null : nbmon[5][3];
