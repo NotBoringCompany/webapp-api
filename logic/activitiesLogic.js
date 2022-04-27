@@ -87,8 +87,6 @@ const addToActivities = async (
 	try {
 		//if genesis minting (NFT transfers)
 		if (transactionType === "genesisMinting") {
-			console.log("genesisMinting activity");
-
 			const ethNFTTransfers = Moralis.Object.extend("EthNFTTransfers");
 			const ethNFTQuery = new Moralis.Query(ethNFTTransfers);
 
@@ -122,7 +120,6 @@ const addToActivities = async (
 		} else {
 			// Only for hatching activity (for now)
 			// Will be called from Frontend because hatching is done from there
-			console.log("hatch activity");
 
 			const hatchingKey = await checkHatchingKeyValid(transactionHash);
 
