@@ -183,10 +183,8 @@ const checkHatchingKeyValid = async (hash) => {
 	//Checks from all hatching keys that are valid
 	const hatchingKeys = Moralis.Object.extend("HatchingKeys");
 	const hatchingKeyQuery = new Moralis.Query(hatchingKeys);
-
-	const hatchingKeyFromTransactionInput = decoder.decodeData(
-		ethTransactionResult.input
-	).inputs[0];
+	const decodedInput = decoder.decodeData(ethTransactionResult.input);
+	const hatchingKeyFromTransactionInput = decodedInput.inputs[0];
 
 	hatchingKeyQuery.equalTo("key", hatchingKeyFromTransactionInput);
 	hatchingKeyQuery.equalTo("addedToActivity", false);
@@ -195,7 +193,7 @@ const checkHatchingKeyValid = async (hash) => {
 		useMasterKey: true,
 	});
 
-	if (hatchingQueryResult) {
+	if (hatchingQueryResult && decodedInput.method === "hatchFromEgg") {
 		return {
 			valid: true,
 			data: ethTransactionResult,
