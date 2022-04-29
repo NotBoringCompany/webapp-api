@@ -61,7 +61,9 @@ const whitelistedMint = async (address) => {
 			process.env.MINTING_PRICE
 		);
 
-		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
+		const currentCount = await genesisContract.currentGenesisNBMonCount();
+		// just to be extra safe
+		const mintedId = parseInt(currentCount) - 1;
 
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, hatchingDuration);
@@ -123,7 +125,9 @@ const publicMint = async (address) => {
 
 		console.log("successfully added to activities");
 
-		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
+		const currentCount = await genesisContract.currentGenesisNBMonCount();
+		// just to be extra safe
+		const mintedId = parseInt(currentCount) - 1;
 
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, hatchingDuration);
