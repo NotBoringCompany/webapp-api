@@ -134,4 +134,7 @@ const publicMint = async (address) => {
 	}
 };
 
-module.exports = { whitelistedMint, publicMint };
+module.exports = { 
+	whitelistedMint, 
+	publicMint 
+};
