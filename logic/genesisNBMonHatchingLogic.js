@@ -49,12 +49,6 @@ const randomizeHatchingStats = async () => {
 		let response = await signer.sendTransaction(unsignedTx);
 		let minedResponse = await response.wait();
 
-		//Turns response to string, and turn it back to JSON
-		//This is done because for some reason response is a ParseObject and not a JSON
-		const jsonResponse = JSON.parse(JSON.stringify(response));
-		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
-		//Parseplatform is used by Moralis' DB
-
 		//Upon successful minting
 		await saveHatchingKey(key);
 

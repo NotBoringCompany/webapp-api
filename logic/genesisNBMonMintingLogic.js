@@ -64,7 +64,7 @@ const whitelistedMint = async (address) => {
 		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
 
 		//add metadata of the egg to Spaces
-		uploadGenesisEggMetadata(mintedId);
+		uploadGenesisEggMetadata(mintedId, hatchingDuration);
 
 		return { nbmonId: mintedId };
 	} catch (err) {
@@ -115,8 +115,8 @@ const publicMint = async (address) => {
 		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
 
 		//add metadata of the egg to Spaces
-		uploadGenesisEggMetadata(mintedId);
-		
+		uploadGenesisEggMetadata(mintedId, hatchingDuration);
+
 		return { nbmonId: mintedId };
 	} catch (err) {
 		return err;

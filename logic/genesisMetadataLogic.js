@@ -1,5 +1,6 @@
 require('dotenv').config();
 const AWS = require("aws-sdk");
+const moment = require("moment");
 
 const spacesEndpoint = new AWS.Endpoint(process.env.SPACES_ENDPOINT);
 
@@ -15,13 +16,25 @@ const s3 = new AWS.S3({
  * @dev This will upload the metadata of the EGG to Spaces. Will contain mostly empty stats/attributes.    
  * @param {id} id resembles the NBMon ID of the metadata to be created for.
  */
-const uploadGenesisEggMetadata = (id) => {
+const uploadGenesisEggMetadata = (id, hatchingDuration) => {
 
     // contains the metadata of the egg
     const metadata = {
         "name": `NBMon Egg #${id}`,
         "description": "This egg contains a mysterious NBMon. Hatch it to find out.",
-        "image": "https://nbcompany.fra1.digitaloceanspaces.com/genesisEgg.png"
+        "image": "https://nbcompany.fra1.digitaloceanspaces.com/genesisEgg.png",
+        "attributes": [
+            {
+                "display_type": "date",
+                "trait_type": "Born on",
+                "value": moment().unix()
+            },
+            {
+                "display_type": "date",
+                "trait_type": "Hatchable on",
+                "value": moment().unix() + hatchingDuration
+            }
+        ]
     };
 
     s3.putObject({
