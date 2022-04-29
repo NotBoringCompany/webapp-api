@@ -189,7 +189,6 @@ const randomizeGenesisPassives = async () => {
     }
 }
 
-
 module.exports = {
     randomizeGenesisGender,
     randomizeGenesisRarity,
