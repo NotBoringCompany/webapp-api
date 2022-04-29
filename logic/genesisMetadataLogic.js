@@ -1,8 +1,5 @@
 require('dotenv').config();
-const ethers = require("ethers");
 const AWS = require("aws-sdk");
-const fs = require("fs");
-const path = require("path");
 
 const spacesEndpoint = new AWS.Endpoint(process.env.SPACES_ENDPOINT);
 
@@ -35,7 +32,7 @@ const uploadGenesisEggMetadata = (id) => {
         ContentType: "application/json"
     }, (err, data) => {
         if (err) throw new Error(err.stack);
-        console.log("File upploaded successfully!", data);
+        console.log("File uploaded successfully!", data);
     });
 }
 
