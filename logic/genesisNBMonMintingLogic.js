@@ -75,14 +75,19 @@ const whitelistedMint = async (address) => {
 const publicMint = async (address) => {
 	try {
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
+
+		console.log("signer ", signer.address);
+
 		let owner = address;
 		let amountToMint = 1;
-		let hatchingDuration = 300;
+		let hatchingDuration = 300	;
 		let nbmonStats = [];
 		let types = [];
 		let potential = [];
 		let passives = [];
 		let isEgg = true;
+
+		console.log(nbmonStats, types, potential, passives);
 
 		let unsignedTx =
 			await genesisContract.populateTransaction.publicGenesisEggMint(
@@ -98,11 +103,15 @@ const publicMint = async (address) => {
 		let response = await signer.sendTransaction(unsignedTx);
 		await response.wait();
 
+		console.log("response is here ", response.data);
+
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
 		const jsonResponse = JSON.parse(JSON.stringify(response));
 		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
 		//Parseplatform is used by Moralis' DB
+
+		console.log("json Response ", jsonResponse);
 
 		//Upon successful minting
 		await addToActivities(
@@ -111,6 +120,8 @@ const publicMint = async (address) => {
 			"eth",
 			process.env.MINTING_PRICE
 		);
+
+		console.log("successfully added to activities");
 
 		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
 
