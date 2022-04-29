@@ -27,26 +27,16 @@ const randomizeHatchingStats = async () => {
 	try {
 		const key = uuidv4();
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
-		const gender = (
-			await genesisStatRandomizer.randomizeGenesisGender()
-		).toString();
-		const rarity = (
-			await genesisStatRandomizer.randomizeGenesisRarity()
-		).toString();
-		const genus = (
-			await genesisStatRandomizer.randomizeGenesisGenus()
-		).toString();
-		const mutation = (
-			await genesisStatRandomizer.randomizeGenesisMutation(genus)
-		).toString();
+		const gender = (await genesisStatRandomizer.randomizeGenesisGender()).toString();
+		const rarity = (await genesisStatRandomizer.randomizeGenesisRarity()).toString();
+		const genus = (await genesisStatRandomizer.randomizeGenesisGenus()).toString();
+		const mutation = (await genesisStatRandomizer.randomizeGenesisMutation(genus)).toString();
 		const species = "Origin";
 		const fertility = "3000";
 		const nbmonStats = [gender, rarity, mutation, species, genus, fertility];
 
 		const types = await getGenesisNBMonTypes(genus);
-		const potential = await genesisStatRandomizer.randomizeGenesisPotential(
-			rarity
-		);
+		const potential = await genesisStatRandomizer.randomizeGenesisPotential(rarity);
 		const passives = await genesisStatRandomizer.randomizeGenesisPassives();
 
 		let unsignedTx = await genesisContract.populateTransaction.addValidKey(

@@ -1,7 +1,9 @@
 const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
+
 const { addToActivities } = require("./activitiesLogic");
+const { uploadGenesisEggMetadata } = require("./genesisMetadataLogic");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
@@ -61,6 +63,9 @@ const whitelistedMint = async (address) => {
 
 		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
 
+		//add metadata of the egg to Spaces
+		uploadGenesisEggMetadata(mintedId);
+
 		return { nbmonId: mintedId };
 	} catch (err) {
 		return err;
@@ -108,6 +113,10 @@ const publicMint = async (address) => {
 		);
 
 		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
+
+		//add metadata of the egg to Spaces
+		uploadGenesisEggMetadata(mintedId);
+		
 		return { nbmonId: mintedId };
 	} catch (err) {
 		return err;
