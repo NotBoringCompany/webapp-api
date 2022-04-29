@@ -10,13 +10,10 @@ const sendPasswordResetRequest = async (email) => {
 	};
 	try {
 		const user = await getUser(email);
-
-		// still saves requests with no actual user connected to that email
-
 		if (user) {
 			await createPasswordResetRequest(email);
 			//sends email
-			return user.email;
+			return returnMsg;
 		} else {
 			return returnMsg;
 		}
@@ -131,13 +128,11 @@ const deleteRequest = async (tokenId) => {
 	const passwordResetRequestQuery = new Moralis.Query(passwordResetRequests);
 	passwordResetRequestQuery.equalTo("tokenId", tokenId);
 
-	const queryResult = await passwordResetRequestQuery.first({
+	const object = await passwordResetRequestQuery.first({
 		useMasterKey: true,
 	});
 
-	if (queryResult) {
-		await queryResult.destory(null, { useMasterKey: true });
-	}
+	if (object) object.destroy({ useMasterKey: true });
 };
 
 module.exports = { sendPasswordResetRequest, resetPassword, checkIfTokenValid };
