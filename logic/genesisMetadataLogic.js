@@ -1,12 +1,12 @@
 require("dotenv").config();
-const { Endpoint, S3, Credentials } = require("aws-sdk");
+const AWS = require("aws-sdk");
 const moment = require("moment");
 
-const spacesEndpoint = new Endpoint(process.env.SPACES_ENDPOINT);
+const spacesEndpoint = new AWS.Endpoint(process.env.SPACES_ENDPOINT);
 
-const s3 = new S3({
+const s3 = new AWS.S3({
 	endpoint: spacesEndpoint.href,
-	credentials: new Credentials({
+	credentials: new AWS.Credentials({
 		accessKeyId: process.env.SPACES_KEY,
 		secretAccessKey: process.env.SPACES_SECRET,
 	}),
