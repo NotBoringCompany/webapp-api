@@ -98,6 +98,7 @@ const getGenesisNBMon = async (id) => {
 
 		nbmonObj["species"] = nbmon[5][3] === undefined ? null : nbmon[5][3];
 		nbmonObj["genus"] = nbmon[5][4] === undefined ? null : nbmon[5][4];
+		nbmonObj["genusDescription"] = await getGenusDescription(nbmonObj["genus"]);
 
 		// calculation for fertility
 		nbmonObj["fertility"] = nbmon[5][5] === undefined ? null : nbmon[5][5];
@@ -179,12 +180,30 @@ const getGenesisNBMonTypes = async (genusParam) => {
 	}
 };
 
+const getGenusDescription = async (genusParam) => {
+	try {
+		if (genusParam !==  null) {
+			const descQuery = new Moralis.Query("NBMon_Data");
+
+			const descPipeline = [
+				{ match: { Genus: genusParam } },
+				{ project: { _id: 0, Description: 1 } }
+			];
+
+			const descAggRes = await descQuery.aggregate(descPipeline);
+			return descAggRes[0]["Description"];
+		} else {
+			return null;
+		}
+	} catch (err) {
+		return err;
+	}
+}
+
 const generalConfig = async () => {
 	try {
 		const supplyLimit = 5000; // total number of NBMons that can be minted
-		const haveBeenMinted = parseInt(
-			Number(await genesisContract.totalSupply())
-		); // total number of NBMons that have been minted
+		const haveBeenMinted = parseInt(Number(await genesisContract.totalSupply())); // total number of NBMons that have been minted
 		const now = moment().unix();
 		const publicOpenAt = parseInt(process.env.PUBLIC_MINT_TIME_UNIX);
 		const whitelistOpenAt = parseInt(process.env.WHITELIST_MINT_TIME_UNIX);
@@ -247,5 +266,6 @@ module.exports = {
 	config,
 	generalConfig,
 	getGenesisNBMonTypes,
-	getFertilityDeduction
+	getFertilityDeduction,
+	getGenusDescription
 };
