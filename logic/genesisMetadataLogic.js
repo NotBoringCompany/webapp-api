@@ -63,7 +63,7 @@ const uploadGenesisEggMetadata = (id, hatchingDuration) => {
  * 
  * @param {*} id resembles the NBMon ID of the metadata to be created for.
  */
-const uploadGenesisHatchedMetadata = async (id, genus) => {
+const uploadGenesisHatchedMetadata = async (id) => {
 
     const paramObj = {
         Bucket: process.env.SPACES_NAME,
@@ -86,8 +86,9 @@ const uploadGenesisHatchedMetadata = async (id, genus) => {
         }
 
         // gets description of genus from Moralis DB
-        const genusDesc = await getGenesisGenusDescription(genus);
         const nbmon = await getGenesisNBMon(id);
+        const genus = nbmon["genus"];
+        const genusDesc = nbmon["genusDescription"];
 
         const newMetadata = {
             name: `NBMon #${id} - ${genus}`,
