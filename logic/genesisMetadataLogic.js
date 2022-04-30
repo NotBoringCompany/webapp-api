@@ -3,6 +3,8 @@ const AWS = require("aws-sdk");
 const Moralis = require("moralis/node");
 const moment = require("moment");
 
+const { getGenesisGenusDescription, getGenesisNBMon } = require("./genesisNBMonLogic");
+
 const spacesEndpoint = new AWS.Endpoint(process.env.SPACES_ENDPOINT);
 
 const s3 = new AWS.S3({
@@ -27,6 +29,7 @@ const uploadGenesisEggMetadata = (id, hatchingDuration) => {
 			{
 				display_type: "date",
 				trait_type: "Born on",
+                // born on may be slightly different than the smart contract's bornAt due to the nature of the code.
 				value: moment().unix(),
 			},
 			{
@@ -46,7 +49,7 @@ const uploadGenesisEggMetadata = (id, hatchingDuration) => {
 			ACL: "public-read",
 			ContentType: "application/json",
 		},
-		(err, data) => {
+		(err) => {
 			if (err) throw new Error(err.stack);
 			return `genesisNBMon/${id}.json has been successfully created.`
 		}
@@ -55,7 +58,9 @@ const uploadGenesisEggMetadata = (id, hatchingDuration) => {
 
 /**
  * @dev This will delete the egg metadata from S3 and create a new object with the original filepath with updated stats.
- * @dev This function is called when a user hatches their NBMon
+ * 
+ * This function is called when a user hatches their NBMon.
+ * 
  * @param {*} id resembles the NBMon ID of the metadata to be created for.
  */
 const uploadGenesisHatchedMetadata = async (id, genus) => {
@@ -81,20 +86,87 @@ const uploadGenesisHatchedMetadata = async (id, genus) => {
         }
 
         // gets description of genus from Moralis DB
-        
+        const genusDesc = await getGenesisGenusDescription(genus);
+        const nbmon = await getGenesisNBMon(id);
 
         const newMetadata = {
             name: `NBMon #${id} - ${genus}`,
             // gets from moralis
-            description: ``
-        }
+            description: genusDesc,
+            image: `https://nbcompany.fra1.digitaloceanspaces.com/genesisGenera/${genus}.png`,
+            attributes: [
+                {
+                    display_type: "date",
+                    trait_type: "Hatched on",
+                    // born on may be slightly different than the smart contract's bornAt due to the nature of the code.
+                    value: nbmon["hatchedAt"]
+                },
+                {
+                    trait_type: "First Type",
+                    value: nbmon["types"][0]
+                },
+                {
+                    trait_type: "Second Type",
+                    value: nbmon["types"][1]
+                },
+                {
+                    trait_type: "Health Potential",
+                    value: nbmon["healthPotential"]
+                },
+                {
+                    trait_type: "Energy Potential",
+                    value: nbmon["energyPotential"]
+                },
+                {
+                    trait_type: "Attack Potential",
+                    value: nbmon["attackPotential"]
+                },
+                {
+                    trait_type: "Defense Potential",
+                    value: nbmon["defensePotential"]
+                },
+                {
+                    trait_type: "Special Attack Potential",
+                    value: nbmon["spAtkPotential"]
+                },
+                {
+                    trait_type: "Special Defense Potential",
+                    value: nbmon["spDefPotential"]
+                },
+                {
+                    trait_type: "Speed Potential",
+                    value: nbmon["speedPotential"]
+                },
+                {
+                    trait_type: "Passive One",
+                    value: nbmon["passives"][0]
+                },
+                {
+                    trait_type: "Passive Two",
+                    value: nbmon["passives"][1]
+                }
+            ],
+        };
 
+        s3.putObject(
+            {
+                Bucket: process.env.SPACES_NAME,
+                Key: `genesisNBMon/${id}.json`,
+                Body: JSON.stringify(newMetadata),
+                ACL: "public-read",
+                ContentType: "application/json"
+            },
+            (err) => {
+                if (err) throw new Error(err.stack);
+                return `genesisNBMon/${id}.json has been successfully created.`
+            }
+        );
     } catch (err) {
         return err;
     }
 };
 
-uploadGenesisHatchedMetadata(14);
 module.exports = {
 	uploadGenesisEggMetadata,
+    uploadGenesisHatchedMetadata
 };
