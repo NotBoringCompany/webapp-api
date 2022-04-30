@@ -9,8 +9,8 @@ router.post("/randomizeHatchingStats", async (_, res) => {
 });
 
 router.post("/uploadHatchedMetadata", async (req, res) => {
-    const { id } = req.params.body;
-    let upload = await uploadGenesisHatchedMetadata(id).catch((err) => res.json(err));
+    const { nbmonId } = req.body;
+    let upload = await uploadGenesisHatchedMetadata(nbmonId).catch((err) => res.json(err));
     res.json(upload);
 })
 
