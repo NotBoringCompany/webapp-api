@@ -20,27 +20,6 @@ const genesisContract = new ethers.Contract(
 	customHttpProvider
 );
 
-const getFertilityDeduction = async (rarity) => {
-	try {
-		switch (rarity) {
-			case "Common":
-				return 1000;
-			case "Uncommon":
-				return 750;
-			case "Rare":
-				return 600;
-			case "Epic":
-				return 500;
-			case "Legendary":
-				return 375;
-			case "Mythical":
-				return 300;
-		}
-	} catch (err) {
-		return err;
-	}
-};
-
 const getGenesisNBMon = async (id) => {
 	try {
 		let nbmonObj = {};
@@ -98,12 +77,13 @@ const getGenesisNBMon = async (id) => {
 
 		nbmonObj["species"] = nbmon[5][3] === undefined ? null : nbmon[5][3];
 		nbmonObj["genus"] = nbmon[5][4] === undefined ? null : nbmon[5][4];
-		nbmonObj["genusDescription"] = await getGenusDescription(nbmonObj["genus"]);
+		nbmonObj["genusDescription"] = await getGenesisGenusDescription(nbmonObj["genus"]);
+		nbmonObj["behavior"] = await getGenesisBehavior(nbmonObj["genus"]);
 
 		// calculation for fertility
 		nbmonObj["fertility"] = nbmon[5][5] === undefined ? null : nbmon[5][5];
 		if (nbmon[5][1] !== undefined) {
-			nbmonObj["fertilityDeduction"] = await getFertilityDeduction(nbmon[5][1]);
+			nbmonObj["fertilityDeduction"] = await getGenesisFertilityDeduction(nbmon[5][1]);
 		} else {
 			nbmonObj["fertilityDeduction"] = null;
 		}
@@ -180,7 +160,7 @@ const getGenesisNBMonTypes = async (genusParam) => {
 	}
 };
 
-const getGenusDescription = async (genusParam) => {
+const getGenesisGenusDescription = async (genusParam) => {
 	try {
 		if (genusParam !==  null) {
 			const descQuery = new Moralis.Query("NBMon_Data");
@@ -199,6 +179,47 @@ const getGenusDescription = async (genusParam) => {
 		return err;
 	}
 }
+
+const getGenesisBehavior = async (genusParam) => {
+	try {
+		if (genusParam !== null) {
+			const behaviorQuery = new Moralis.Query("NBMon_Data");
+
+			const behaviorPipeline = [
+				{ match: { Genus: genusParam } },
+				{ project: { _id: 0, Behavior: 1 } }
+			];
+
+			const behaviorAggRes = await behaviorQuery.aggregate(behaviorPipeline);
+			return behaviorAggRes[0]["Behavior"];
+		} else {
+			return null;
+		}
+	} catch (err) {
+		return err;
+	}
+}
+
+const getGenesisFertilityDeduction = async (rarity) => {
+	try {
+		switch (rarity) {
+			case "Common":
+				return 1000;
+			case "Uncommon":
+				return 750;
+			case "Rare":
+				return 600;
+			case "Epic":
+				return 500;
+			case "Legendary":
+				return 375;
+			case "Mythical":
+				return 300;
+		}
+	} catch (err) {
+		return err;
+	}
+};
 
 const generalConfig = async () => {
 	try {
@@ -266,6 +287,7 @@ module.exports = {
 	config,
 	generalConfig,
 	getGenesisNBMonTypes,
-	getFertilityDeduction,
-	getGenusDescription
+	getGenesisFertilityDeduction,
+	getGenesisGenusDescription,
+	getGenesisBehavior
 };
