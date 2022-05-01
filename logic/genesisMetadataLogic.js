@@ -85,94 +85,106 @@ const uploadGenesisHatchedMetadata = async (id) => {
         ];
         const hatchedAggRes = await hatchedQuery.aggregate(hatchedPipeline);
 
-        // if id doesn't exist in DB (meaning that it hasn't been hatched before)
-        if (hatchedAggRes.length !== 0) {
-            // before deleting the object, checks if object exists within bucket.
-            await s3.headObject(paramObj).promise();
-            try {
-                // deletes the specified object.
-                await s3.deleteObject(
-                    paramObj, 
-                    (err) => {
-                        if (err) throw new Error(err.stack);  
-                    }
-                ).promise();
-            } catch (err) {
-                return err;
-            }
-
-            const newMetadata = {
-                name: `NBMon #${id} - ${genus}`,
-                // gets from moralis
-                description: genusDesc,
-                image: `https://nbcompany.fra1.digitaloceanspaces.com/genesisGenera/${genus}.png`,
-                attributes: [
-                    {
-                        display_type: "date",
-                        trait_type: "Hatched on",
-                        // born on may be slightly different than the smart contract's bornAt due to the nature of the code.
-                        value: nbmon["hatchedAt"]
-                    },
-                    {
-                        trait_type: "First Type",
-                        value: nbmon["types"][0]
-                    },
-                    {
-                        trait_type: "Second Type",
-                        value: nbmon["types"][1]
-                    },
-                    {
-                        trait_type: "Health Potential",
-                        value: nbmon["healthPotential"]
-                    },
-                    {
-                        trait_type: "Energy Potential",
-                        value: nbmon["energyPotential"]
-                    },
-                    {
-                        trait_type: "Attack Potential",
-                        value: nbmon["attackPotential"]
-                    },
-                    {
-                        trait_type: "Defense Potential",
-                        value: nbmon["defensePotential"]
-                    },
-                    {
-                        trait_type: "Special Attack Potential",
-                        value: nbmon["spAtkPotential"]
-                    },
-                    {
-                        trait_type: "Special Defense Potential",
-                        value: nbmon["spDefPotential"]
-                    },
-                    {
-                        trait_type: "Speed Potential",
-                        value: nbmon["speedPotential"]
-                    },
-                    {
-                        trait_type: "Passive One",
-                        value: nbmon["passives"][0]
-                    },
-                    {
-                        trait_type: "Passive Two",
-                        value: nbmon["passives"][1]
-                    }
-                ],
-            };
-
-            s3.putObject(
-                {
-                    Bucket: process.env.SPACES_NAME,
-                    Key: `genesisNBMon/${id}.json`,
-                    Body: JSON.stringify(newMetadata),
-                    ACL: "public-read",
-                    ContentType: "application/json"
-                },
-                (err) => {
-                    if (err) throw new Error(err.stack);
-                    return `genesisNBMon/${id}.json has been successfully created.`
+        // if id doesn't exist in DB (meaning that it hasn't been hatched before and stored in the DB)
+        if (hatchedAggRes.length === 0) {
+            // double check to ensure that the nbmon has been hatched (but not in the DB)
+            if (isEgg === false) {
+                // before deleting the object, checks if object exists within bucket.
+                await s3.headObject(paramObj).promise();
+                try {
+                    // deletes the specified object.
+                    await s3.deleteObject(
+                        paramObj, 
+                        (err) => {
+                            if (err) throw new Error(err.stack);  
+                        }
+                    ).promise();
+                } catch (err) {
+                    return err;
                 }
-            );
+
+                const newMetadata = {
+                    name: `NBMon #${id} - ${genus}`,
+                    // gets from moralis
+                    description: genusDesc,
+                    image: `https://nbcompany.fra1.digitaloceanspaces.com/genesisGenera/${genus}.png`,
+                    attributes: [
+                        {
+                            display_type: "date",
+                            trait_type: "Hatched on",
+                            // born on may be slightly different than the smart contract's bornAt due to the nature of the code.
+                            value: nbmon["hatchedAt"]
+                        },
+                        {
+                            trait_type: "First Type",
+                            value: nbmon["types"][0]
+                        },
+                        {
+                            trait_type: "Second Type",
+                            value: nbmon["types"][1]
+                        },
+                        {
+                            display_type: "number",
+                            trait_type: "Health Potential",
+                            value: nbmon["healthPotential"]
+                        },
+                        {
+                            display_type: "number",
+                            trait_type: "Energy Potential",
+                            value: nbmon["energyPotential"]
+                        },
+                        {
+                            display_type: "number",
+                            trait_type: "Attack Potential",
+                            value: nbmon["attackPotential"]
+                        },
+                        {
+                            display_type: "number",
+                            trait_type: "Defense Potential",
+                            value: nbmon["defensePotential"]
+                        },
+                        {
+                            display_type: "number",
+                            trait_type: "Special Attack Potential",
+                            value: nbmon["spAtkPotential"]
+                        },
+                        {
+                            display_type: "number",
+                            trait_type: "Special Defense Potential",
+                            value: nbmon["spDefPotential"]
+                        },
+                        {
+                            display_type: "number",
+                            trait_type: "Speed Potential",
+                            value: nbmon["speedPotential"]
+                        },
+                        {
+                            trait_type: "Passive One",
+                            value: nbmon["passives"][0]
+                        },
+                        {
+                            trait_type: "Passive Two",
+                            value: nbmon["passives"][1]
+                        }
+                    ],
+                };
+
+                s3.putObject(
+                    {
+                        Bucket: process.env.SPACES_NAME,
+                        Key: `genesisNBMon/${id}.json`,
+                        Body: JSON.stringify(newMetadata),
+                        ACL: "public-read",
+                        ContentType: "application/json"
+                    },
+                    (err) => {
+                        if (err) throw new Error(err.stack);
+                        return `genesisNBMon/${id}.json has been successfully created.`
+                    }
+                );
+            } else {
+                return "isEgg is still true. Please double check again."
+            }
         } else {
             return "Egg has already been hatched. Upload metadata to Spaces failed."
         }
