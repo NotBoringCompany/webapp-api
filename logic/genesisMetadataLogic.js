@@ -169,6 +169,7 @@ const uploadGenesisHatchedMetadata = async (id) => {
                     ],
                 };
 
+                // upload to Spaces
                 s3.putObject(
                     {
                         Bucket: process.env.SPACES_NAME,
@@ -182,6 +183,18 @@ const uploadGenesisHatchedMetadata = async (id) => {
                         return `genesisNBMon/${id}.json has been successfully created.`
                     }
                 );
+
+                //add to Hatched_Metadata DB
+                const Hatched_Metadata = Moralis.Object.extend("Hatched_Metadata");
+                const hatchedMetadata = new Hatched_Metadata();
+
+                hatchedMetadata.set("nbmonId", id);
+
+                hatchedMetadata.save().then((metadata) => {
+                    return `Metadata ${metadata} added with NBMon ID ${id}`;
+                }, (err) => {
+                    throw new Error(err.stack);
+                });
             } else {
                 return "isEgg is still true. Please double check again."
             }
