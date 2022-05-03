@@ -258,21 +258,22 @@ const config = async (address) => {
 		const { haveBeenMinted, supplyLimit } = generalConfigs.supplies;
 		const isWhitelisted = await genesisContract.whitelisted(address);
 
-		const hasMintedBefore =
-			(await genesisContract.amountMinted(address)) === 1 ? true : false;
+		const amountMinted = await genesisContract.amountMinted(address);
+
+		const hasMintedFive = amountMinted === 5 ? true : false;
 		let canMint = false;
 
 		if (haveBeenMinted < supplyLimit) {
 			if (isWhitelisted) {
-				if (isWhitelistOpen && !hasMintedBefore) canMint = true;
+				if (isWhitelistOpen && !hasMintedFive) canMint = true;
 				else canMint = false;
 			} else {
-				if (isPublicOpen && !hasMintedBefore) canMint = true;
+				if (isPublicOpen && !hasMintedFive) canMint = true;
 				else canMint = false;
 			}
 		}
 
-		const status = { address, canMint, isWhitelisted, hasMintedBefore };
+		const status = { address, canMint, isWhitelisted, amountMinted, hasMintedFive };
 
 		return { status, ...generalConfigs };
 	} catch (err) {
