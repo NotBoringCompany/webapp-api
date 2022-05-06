@@ -7,21 +7,21 @@ const {
 
 router.get("/:address", async (req, res) => {
 	const { address } = req.params;
-	let activities = await getUserActivities(address).catch((error) => {
-		return { error: error.message };
-	});
-	res.json(activities);
+	try {
+		let activities = await getUserActivities(address);
+		res.json(activities);
+	} catch (error) {
+		res.status(400).json({ error });
+	}
 });
 router.post("/addHatchingActivity", async (req, res) => {
 	const { hash } = req.body;
-
-	let result = await addToActivities(hash, "genesisHatching", "eth", "0").catch(
-		(error) => {
-			return { error: error.message };
-		}
-	);
-
-	res.json(result);
+	try {
+		let result = await addToActivities(hash, "genesisHatching", "eth", "0");
+		res.json(result);
+	} catch (error) {
+		res.status(400).json({ error });
+	}
 });
 
 module.exports = router;
