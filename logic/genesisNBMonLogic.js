@@ -9,7 +9,10 @@ const moralisAPINode = process.env.MORALIS_APINODE;
 const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
-const { getAttackEffectiveness, getDefenseEffectiveness } = require("../logic/typeEffectivenessLogic");
+const {
+	getAttackEffectiveness,
+	getDefenseEffectiveness,
+} = require("../logic/typeEffectivenessLogic");
 const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")
 );
@@ -19,27 +22,6 @@ const genesisContract = new ethers.Contract(
 	genesisABI,
 	customHttpProvider
 );
-
-const getFertilityDeduction = async (rarity) => {
-	try {
-		switch (rarity) {
-			case "Common":
-				return 1000;
-			case "Uncommon":
-				return 750;
-			case "Rare":
-				return 600;
-			case "Epic":
-				return 500;
-			case "Legendary":
-				return 375;
-			case "Mythical":
-				return 300;
-		}
-	} catch (err) {
-		return err;
-	}
-};
 
 const getGenesisNBMon = async (id) => {
 	try {
@@ -71,8 +53,16 @@ const getGenesisNBMon = async (id) => {
 		const firstType = nbmon[6][0] === undefined ? null : nbmon[6][0];
 		const secondType = nbmon[6][1] === undefined ? null : nbmon[6][1];
 		// calculates typeEffectiveness
-		const attackEff = await getAttackEffectiveness(firstType, secondType, "true");
-		const defenseEff = await getDefenseEffectiveness(firstType, secondType, "true");
+		const attackEff = await getAttackEffectiveness(
+			firstType,
+			secondType,
+			"true"
+		);
+		const defenseEff = await getDefenseEffectiveness(
+			firstType,
+			secondType,
+			"true"
+		);
 		nbmonObj["strongAgainst"] = attackEff["Strong against"];
 		nbmonObj["weakAgainst"] = attackEff["Weak against"];
 		nbmonObj["resistantTo"] = defenseEff["Resistant to"];
@@ -90,19 +80,27 @@ const getGenesisNBMon = async (id) => {
 		if (nbmon[9] === true) {
 			nbmonObj["mutation"] = "Not mutated";
 			nbmonObj["mutationType"] = null;
-		// if already hatched
+			// if already hatched
 		} else {
-			nbmonObj["mutation"] = nbmon[5][2] === "Not mutated" ? nbmon[5][2] : "Mutated";
-			nbmonObj["mutationType"] = nbmonObj["mutation"] === "Mutated" ? nbmon[5][2] : null;
+			nbmonObj["mutation"] =
+				nbmon[5][2] === "Not mutated" ? nbmon[5][2] : "Mutated";
+			nbmonObj["mutationType"] =
+				nbmonObj["mutation"] === "Mutated" ? nbmon[5][2] : null;
 		}
 
 		nbmonObj["species"] = nbmon[5][3] === undefined ? null : nbmon[5][3];
 		nbmonObj["genus"] = nbmon[5][4] === undefined ? null : nbmon[5][4];
+		nbmonObj["genusDescription"] = await getGenesisGenusDescription(
+			nbmonObj["genus"]
+		);
+		nbmonObj["behavior"] = await getGenesisBehavior(nbmonObj["genus"]);
 
 		// calculation for fertility
 		nbmonObj["fertility"] = nbmon[5][5] === undefined ? null : nbmon[5][5];
 		if (nbmon[5][1] !== undefined) {
-			nbmonObj["fertilityDeduction"] = await getFertilityDeduction(nbmon[5][1]);
+			nbmonObj["fertilityDeduction"] = await getGenesisFertilityDeduction(
+				nbmon[5][1]
+			);
 		} else {
 			nbmonObj["fertilityDeduction"] = null;
 		}
@@ -167,13 +165,73 @@ const getGenesisNBMonTypes = async (genusParam) => {
 
 		const typesPipeline = [
 			{ match: { Genus: genusParam } },
-			{ project: { _id: 0, Types: 1 } }
+			{ project: { _id: 0, Types: 1 } },
 		];
 
 		const typesAggRes = await typesQuery.aggregate(typesPipeline);
 
 		return typesAggRes[0]["Types"];
+	} catch (err) {
+		return err;
+	}
+};
 
+const getGenesisGenusDescription = async (genusParam) => {
+	try {
+		if (genusParam !== null) {
+			const descQuery = new Moralis.Query("NBMon_Data");
+
+			const descPipeline = [
+				{ match: { Genus: genusParam } },
+				{ project: { _id: 0, Description: 1 } },
+			];
+
+			const descAggRes = await descQuery.aggregate(descPipeline);
+			return descAggRes[0]["Description"];
+		} else {
+			return null;
+		}
+	} catch (err) {
+		return err;
+	}
+};
+
+const getGenesisBehavior = async (genusParam) => {
+	try {
+		if (genusParam !== null) {
+			const behaviorQuery = new Moralis.Query("NBMon_Data");
+
+			const behaviorPipeline = [
+				{ match: { Genus: genusParam } },
+				{ project: { _id: 0, Behavior: 1 } },
+			];
+
+			const behaviorAggRes = await behaviorQuery.aggregate(behaviorPipeline);
+			return behaviorAggRes[0]["Behavior"];
+		} else {
+			return null;
+		}
+	} catch (err) {
+		return err;
+	}
+};
+
+const getGenesisFertilityDeduction = async (rarity) => {
+	try {
+		switch (rarity) {
+			case "Common":
+				return 1000;
+			case "Uncommon":
+				return 750;
+			case "Rare":
+				return 600;
+			case "Epic":
+				return 500;
+			case "Legendary":
+				return 375;
+			case "Mythical":
+				return 300;
+		}
 	} catch (err) {
 		return err;
 	}
@@ -214,30 +272,74 @@ const generalConfig = async () => {
 const config = async (address) => {
 	try {
 		const generalConfigs = await generalConfig();
-		const { isWhitelistOpen, isPublicOpen } = generalConfigs.timeStamps;
+		const { isWhitelistOpen, isPublicOpen, isMintingEnded } =
+			generalConfigs.timeStamps;
 		const { haveBeenMinted, supplyLimit } = generalConfigs.supplies;
 		const isWhitelisted = await genesisContract.whitelisted(address);
 
-		const hasMintedBefore =
-			(await genesisContract.amountMinted(address)) === 1 ? true : false;
+		const amountMinted = await genesisContract.amountMinted(address);
+
+		const hasMintedFive = amountMinted === 5 ? true : false;
 		let canMint = false;
 
-		if (haveBeenMinted < supplyLimit) {
-			if (isWhitelisted) {
-				if (isWhitelistOpen && !hasMintedBefore) canMint = true;
-				else canMint = false;
-			} else {
-				if (isPublicOpen && !hasMintedBefore) canMint = true;
-				else canMint = false;
+		if (hasMintedFive || isMintingEnded) canMint = false;
+		else {
+			if (haveBeenMinted < supplyLimit) {
+				//If user is whitelisted
+				if (isWhitelisted) {
+					canMint = canMintUserWhitelisted(
+						isWhitelistOpen,
+						isPublicOpen,
+						amountMinted,
+						hasMintedFive
+					);
+
+					//If user isn't whitelisted
+				} else {
+					if (isPublicOpen && !hasMintedFive) canMint = true;
+					else canMint = false;
+				}
 			}
 		}
 
-		const status = { address, canMint, isWhitelisted, hasMintedBefore };
+		const status = {
+			address,
+			canMint,
+			isWhitelisted,
+			amountMinted,
+			hasMintedFive,
+		};
 
 		return { status, ...generalConfigs };
 	} catch (err) {
 		return err;
 	}
+};
+
+/**
+ * @dev Decides canMint value (bool) of a whitelisted user
+ */
+const canMintUserWhitelisted = (
+	isWhitelistOpen,
+	isPublicOpen,
+	amountMinted,
+	hasMintedFive
+) => {
+	//If whitelist minting is still closed
+	if (!isWhitelistOpen) return false;
+
+	//If user hasnt minted yet and public is closed
+	if (amountMinted === 0 && !isPublicOpen) return true;
+
+	//If user has minted once and public is closed
+	if (amountMinted === 1 && !isPublicOpen) return false;
+
+	//If user hasnt minted 5 and public is open
+	if (!hasMintedFive && isPublicOpen) return true;
+
+	//Otherwise,
+	//(this is most likely will never be called)
+	return false;
 };
 
 module.exports = {
@@ -247,5 +349,7 @@ module.exports = {
 	config,
 	generalConfig,
 	getGenesisNBMonTypes,
-	getFertilityDeduction
+	getGenesisFertilityDeduction,
+	getGenesisGenusDescription,
+	getGenesisBehavior,
 };

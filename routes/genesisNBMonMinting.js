@@ -11,9 +11,9 @@ const { paymentReceived } = require("../middlewares/requirePayment");
 
 router.post(
 	"/whitelistedMint",
-	// paymentReceived,
-	// isWhitelistMintingTime,
-	// mintingTimeNotClosed,
+	paymentReceived,
+	isWhitelistMintingTime,
+	mintingTimeNotClosed,
 	async (req, res) => {
 		const { purchaserAddress } = req.body;
 
@@ -26,9 +26,9 @@ router.post(
 
 router.post(
 	"/publicMint",
-	// paymentReceived,
-	// isPublicMintingTime,
-	// mintingTimeNotClosed,
+	paymentReceived,
+	isPublicMintingTime,
+	mintingTimeNotClosed,
 	async (req, res) => {
 		const { purchaserAddress } = req.body;
 

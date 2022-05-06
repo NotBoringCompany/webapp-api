@@ -61,7 +61,7 @@ const randomizeGenesisGenus = async () => {
             "Darrakan",
             "Kirin",
             "Heree",
-            "Fennec"
+            "Spherno"
         ];
     
         let genusRand = Math.floor(Math.random() * availableGenera.length);
@@ -188,7 +188,6 @@ const randomizeGenesisPassives = async () => {
         return err;
     }
 }
-
 
 module.exports = {
     randomizeGenesisGender,

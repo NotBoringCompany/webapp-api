@@ -61,7 +61,9 @@ const whitelistedMint = async (address) => {
 			process.env.MINTING_PRICE
 		);
 
-		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
+		const currentCount = await genesisContract.currentGenesisNBMonCount();
+		// just to be extra safe
+		const mintedId = parseInt(currentCount) - 1;
 
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, hatchingDuration);
@@ -80,7 +82,7 @@ const publicMint = async (address) => {
 
 		let owner = address;
 		let amountToMint = 1;
-		let hatchingDuration = 300	;
+		let hatchingDuration = 300;
 		let nbmonStats = [];
 		let types = [];
 		let potential = [];
@@ -123,8 +125,12 @@ const publicMint = async (address) => {
 
 		console.log("successfully added to activities");
 
-		const mintedId = await genesisContract.currentGenesisNBMonCount() - 1;
-
+		const currentCount = await genesisContract.currentGenesisNBMonCount();
+		// just to be extra safe
+		const mintedId = parseInt(currentCount) - 1;
+		if (!mintedId || mintedId === undefined || isNaN(mintedId)) {
+			console.log("Error nbmonId", mintedId);
+		}
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, hatchingDuration);
 
@@ -134,4 +140,7 @@ const publicMint = async (address) => {
 	}
 };
 
-module.exports = { whitelistedMint, publicMint };
+module.exports = {
+	whitelistedMint,
+	publicMint,
+};
