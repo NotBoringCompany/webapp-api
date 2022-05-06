@@ -1,7 +1,23 @@
 const Moralis = require("moralis/node");
 const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
 
 const TWO_HOURS_IN_MS = 7200 * 1000;
+
+const CLIENT_ID = process.env.GOOGLE_APIS_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_APIS_CLIENT_SECRET;
+const REDIR_URL = process.env.GOOGLE_APIS_REDIR_URL;
+const REFRESH_TOKEN = process.env.GOOGLE_APIS_REFRESH_TOKEN;
+const FRONTEND_DOMAIN = process.env.FRONTEND_DOMAIN;
+const AUTHOIRSED_EMAIL = process.env.GOOGLE_APIS_AUTHORISED_EMAIL;
+
+const oAuth2Client = new google.auth.OAuth2(
+	CLIENT_ID,
+	CLIENT_SECRET,
+	REDIR_URL
+);
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
 const sendPasswordResetRequest = async (email) => {
 	const returnMsg = {
@@ -11,14 +27,44 @@ const sendPasswordResetRequest = async (email) => {
 	try {
 		const user = await getUser(email);
 		if (user) {
-			await createPasswordResetRequest(email);
-			//sends email
+			const tokenId = await createPasswordResetRequest(email);
+			await sendEmail(email, tokenId);
 			return returnMsg;
 		} else {
 			return returnMsg;
 		}
 	} catch (err) {
 		throw new Error(err);
+	}
+};
+
+const sendEmail = async (emailAddress, tokenId) => {
+	try {
+		const accessToken = await oAuth2Client.getAccessToken();
+
+		const transport = nodemailer.createTransport({
+			service: "gmail",
+			auth: {
+				type: "OAUTH2",
+				user: AUTHOIRSED_EMAIL,
+				clientId: CLIENT_ID,
+				clientSecret: CLIENT_SECRET,
+				refresh_token: REFRESH_TOKEN,
+				accessToken: accessToken.token,
+			},
+		});
+
+		const mailOptions = {
+			from: `Realm Hunter <${AUTHOIRSED_EMAIL}>`,
+			to: emailAddress,
+			subject: "Realm Hunter: Reset your password",
+			html: `Hey there! <br/> <br/> Someone has just requested a password change for an account with this email address. Please ignore this message if you don't want to change your password. <br/><br/> <a target='_blank' rel='noopener noreferrer' href='${FRONTEND_DOMAIN}/connect?rtk=${tokenId}'>Click this link to reset your password</a> <br/><br/> Sincerly, your Realm Hunter team. 😊`,
+		};
+
+		const result = transport.sendMail(mailOptions);
+		return result;
+	} catch (error) {
+		throw err.message;
 	}
 };
 
@@ -106,6 +152,8 @@ const createPasswordResetRequest = async (email) => {
 	await newPasswordResetRequest
 		.save(null, { useMasterKey: true })
 		.catch((err) => err);
+
+	return tokenId;
 };
 
 const getUser = async (email) => {
