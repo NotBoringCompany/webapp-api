@@ -11,19 +11,17 @@ router.post("/send-reset-password-request", async (req, res) => {
 	const { email } = req.body;
 
 	try {
-		let result = await sendPasswordResetRequest(email).catch((error) => {
-			return { error: error.message };
-		});
+		let result = await sendPasswordResetRequest(email);
 		res.json(result);
 	} catch (error) {
-		res.status(400).json({ error });
+		res.status(400).json({ error: error.message });
 	}
 });
 
 router.get("/password-token-check/:token", async (req, res) => {
 	const { token } = req.params;
 	let result = await checkIfTokenValid(token).catch((err) =>
-		res.json(err.message)
+		res.status(400).json({ error: err.message })
 	);
 	if (result.valid) {
 		return res.json({ valid: true });
