@@ -58,7 +58,7 @@ const sendEmail = async (emailAddress, tokenId) => {
 			from: `Realm Hunter <${AUTHOIRSED_EMAIL}>`,
 			to: emailAddress,
 			subject: "Realm Hunter: Reset your password",
-			html: `Hey there! <br/> <br/> Someone has just requested a password change for an account with this email address. Please ignore this message if you don't want to change your password. <br/><br/> <a target='_blank' rel='noopener noreferrer' href='${FRONTEND_DOMAIN}/connect?rtk=${tokenId}'>Click this link to reset your password</a> <br/><br/> Sincerly, your Realm Hunter team. 😊`,
+			html: `Hey there! <br/> <br/> Someone has just requested a password change for an account with this email address. Please ignore this message if you don't want to change your password. <br/><br/> <a target='_blank' rel='noopener noreferrer' href='${FRONTEND_DOMAIN}/connect?rtk=${tokenId}'>Click this link to reset your password</a>. This link will be valid for 2 hours. <br/><br/> Sincerly, your Realm Hunter team. 😊`,
 		};
 
 		const result = transport.sendMail(mailOptions);
