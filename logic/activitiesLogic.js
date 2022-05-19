@@ -223,7 +223,7 @@ const invalidateHatchingKey = async (key) => {
 		hatchingQueryResult.set("addedToActivity", true);
 	}
 
-	await hatchingQueryResult.save({ useMasterKey: true });
+	await hatchingQueryResult.save(null, { useMasterKey: true });
 };
 
 module.exports = {
