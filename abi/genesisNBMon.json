@@ -59,31 +59,18 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "_nbmonId",
-        "type": "uint256"
-      }
-    ],
-    "name": "GenesisNBMonBurned",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "_nbmonId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
         "internalType": "address",
         "name": "_owner",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_nbmonId",
+        "type": "uint256"
       }
     ],
-    "name": "GenesisNBMonMinted",
+    "name": "Hatched",
     "type": "event"
   },
   {
@@ -136,6 +123,44 @@
       }
     ],
     "name": "MintingNotAllowed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "NFTBurned",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_bornAt",
+        "type": "uint256"
+      }
+    ],
+    "name": "NFTMinted",
     "type": "event"
   },
   {
@@ -218,32 +243,60 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_nbmonId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_minter",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_bornAt",
+        "type": "uint256"
+      },
+      {
         "internalType": "string",
-        "name": "_key",
+        "name": "_txSalt",
         "type": "string"
       },
       {
-        "internalType": "string[]",
-        "name": "_nbmonStats",
-        "type": "string[]"
+        "internalType": "bytes",
+        "name": "_signature",
+        "type": "bytes"
       },
       {
         "internalType": "string[]",
-        "name": "_types",
+        "name": "_stringMetadata",
         "type": "string[]"
       },
       {
-        "internalType": "uint8[]",
-        "name": "_potential",
-        "type": "uint8[]"
+        "internalType": "uint256[]",
+        "name": "_numericMetadata",
+        "type": "uint256[]"
       },
       {
-        "internalType": "string[]",
-        "name": "_passives",
-        "type": "string[]"
+        "internalType": "bool[]",
+        "name": "_boolMetadata",
+        "type": "bool[]"
       }
     ],
-    "name": "addValidKey",
+    "name": "addHatchingStats",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_addrs",
+        "type": "address[]"
+      }
+    ],
+    "name": "addMinters",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -262,62 +315,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "_amountToMint",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint32",
-        "name": "_hatchingDuration",
-        "type": "uint32"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_nbmonStats",
-        "type": "string[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_types",
-        "type": "string[]"
-      },
-      {
-        "internalType": "uint8[]",
-        "name": "_potential",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_passives",
-        "type": "string[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_isEgg",
-        "type": "bool"
-      }
-    ],
-    "name": "adoptionIncentivesGenesisEggMint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "adoptionIncentivesSupplyLimit",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "allowHatching",
     "outputs": [],
@@ -329,25 +326,6 @@
     "name": "allowMinting",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "amountMinted",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -390,12 +368,25 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "_addrs",
+        "type": "address[]"
+      }
+    ],
+    "name": "blacklistAddresses",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
-        "name": "_nbmonId",
+        "name": "tokenId",
         "type": "uint256"
       }
     ],
-    "name": "burnNBMon",
+    "name": "burnNFT",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -429,12 +420,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_count",
-        "type": "uint256"
+        "internalType": "uint16",
+        "name": "_limit",
+        "type": "uint16"
       }
     ],
-    "name": "changeCurrentCount",
+    "name": "changeDevMintLimit",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -443,11 +434,11 @@
     "inputs": [
       {
         "internalType": "uint16",
-        "name": "_mintLimit",
+        "name": "_limit",
         "type": "uint16"
       }
     ],
-    "name": "changeMintLimit",
+    "name": "changeGeneralMintLimit",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -456,11 +447,11 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_mintingPrice",
+        "name": "_price",
         "type": "uint256"
       }
     ],
-    "name": "changeMintingPrice",
+    "name": "changePublicMintingPrice",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -468,12 +459,57 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_key",
-        "type": "string"
+        "internalType": "uint8",
+        "name": "_limit",
+        "type": "uint8"
       }
     ],
-    "name": "checkValidKey",
+    "name": "changeWhitelistedMintLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeWhitelistedMintingPrice",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_addr",
+        "type": "address"
+      }
+    ],
+    "name": "checkAmountMinted",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_addr",
+        "type": "address"
+      }
+    ],
+    "name": "checkBlacklisted",
     "outputs": [
       {
         "internalType": "bool",
@@ -485,13 +521,38 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "currentGenesisNBMonCount",
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_signature",
+        "type": "bytes"
+      }
+    ],
+    "name": "checkSigExists",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bool",
         "name": "",
-        "type": "uint256"
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_addr",
+        "type": "address"
+      }
+    ],
+    "name": "checkWhitelisted",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -505,37 +566,22 @@
         "type": "uint16"
       },
       {
-        "internalType": "uint32",
-        "name": "_hatchingDuration",
-        "type": "uint32"
-      },
-      {
         "internalType": "string[]",
-        "name": "_nbmonStats",
+        "name": "_stringMetadata",
         "type": "string[]"
       },
       {
-        "internalType": "string[]",
-        "name": "_types",
-        "type": "string[]"
+        "internalType": "uint256[]",
+        "name": "_numericMetadata",
+        "type": "uint256[]"
       },
       {
-        "internalType": "uint8[]",
-        "name": "_potential",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_passives",
-        "type": "string[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_isEgg",
-        "type": "bool"
+        "internalType": "bool[]",
+        "name": "_boolMetadata",
+        "type": "bool[]"
       }
     ],
-    "name": "devGenesisEggMint",
+    "name": "devMint",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -568,6 +614,32 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "generalMintLimit",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "generalSupplyLimit",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -589,18 +661,64 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_nbmonId",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "_addr",
+        "type": "address"
       }
     ],
-    "name": "getGenesisNBMon",
+    "name": "getMinterProfile",
     "outputs": [
       {
         "components": [
           {
+            "internalType": "address",
+            "name": "addr",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "whitelisted",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "blacklisted",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint16",
+            "name": "amountMinted",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct MintingCore.Minter",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getNFT",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "nftName",
+            "type": "string"
+          },
+          {
             "internalType": "uint256",
-            "name": "nbmonId",
+            "name": "tokenId",
             "type": "uint256"
           },
           {
@@ -610,7 +728,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "hatchedAt",
+            "name": "bornAt",
             "type": "uint256"
           },
           {
@@ -619,37 +737,37 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint32",
-            "name": "hatchingDuration",
-            "type": "uint32"
-          },
-          {
-            "internalType": "string[]",
-            "name": "nbmonStats",
-            "type": "string[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "types",
-            "type": "string[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "potential",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "passives",
-            "type": "string[]"
-          },
-          {
             "internalType": "bool",
-            "name": "isEgg",
+            "name": "onSale",
             "type": "bool"
+          },
+          {
+            "internalType": "address[]",
+            "name": "addressMetadata",
+            "type": "address[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "stringMetadata",
+            "type": "string[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "numericMetadata",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "bool[]",
+            "name": "boolMetadata",
+            "type": "bool[]"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "bytesMetadata",
+            "type": "bytes32[]"
           }
         ],
-        "internalType": "struct GenesisNBMonCoreA.GenesisNBMon",
+        "internalType": "struct NFTCoreA.NFT",
         "name": "",
         "type": "tuple"
       }
@@ -665,7 +783,7 @@
         "type": "address"
       }
     ],
-    "name": "getOwnerGenesisNBMonIds",
+    "name": "getOwnerNFTIds",
     "outputs": [
       {
         "internalType": "uint256[]",
@@ -679,19 +797,48 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_key",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_nbmonId",
-        "type": "uint256"
+        "internalType": "bytes",
+        "name": "_signature",
+        "type": "bytes"
       }
     ],
     "name": "hatchFromEgg",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_nbmonId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_minter",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_bornAt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_txSalt",
+        "type": "string"
+      }
+    ],
+    "name": "hatchingHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -733,7 +880,7 @@
   },
   {
     "inputs": [],
-    "name": "mintLimit",
+    "name": "maxSupply",
     "outputs": [
       {
         "internalType": "uint16",
@@ -752,19 +899,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "mintingPrice",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -891,58 +1025,16 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_owner",
+        "name": "_addr",
         "type": "address"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_amountToMint",
-        "type": "uint16"
-      },
-      {
-        "internalType": "uint32",
-        "name": "_hatchingDuration",
-        "type": "uint32"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_nbmonStats",
-        "type": "string[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_types",
-        "type": "string[]"
-      },
-      {
-        "internalType": "uint8[]",
-        "name": "_potential",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_passives",
-        "type": "string[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_isEgg",
-        "type": "bool"
       }
     ],
-    "name": "publicGenesisEggMint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "publicSupplyLimit",
+    "name": "profileRegistered",
     "outputs": [
       {
-        "internalType": "uint16",
+        "internalType": "bool",
         "name": "",
-        "type": "uint16"
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -951,12 +1043,58 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_key",
-        "type": "string"
+        "internalType": "address",
+        "name": "_addr",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_amountToMint",
+        "type": "uint16"
+      },
+      {
+        "internalType": "string[]",
+        "name": "_stringMetadata",
+        "type": "string[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_numericMetadata",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bool[]",
+        "name": "_boolMetadata",
+        "type": "bool[]"
       }
     ],
-    "name": "removeValidKey",
+    "name": "publicMint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "publicMintingPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_addrs",
+        "type": "address[]"
+      }
+    ],
+    "name": "removeBlacklists",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -964,12 +1102,25 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
+        "internalType": "bytes",
+        "name": "_signature",
+        "type": "bytes"
       }
     ],
-    "name": "removeWhitelistAddress",
+    "name": "removeHatchingStats",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_addrs",
+        "type": "address[]"
+      }
+    ],
+    "name": "removeWhitelists",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1153,12 +1304,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
+        "internalType": "address[]",
+        "name": "_addrs",
+        "type": "address[]"
       }
     ],
-    "name": "whitelistAddress",
+    "name": "whitelistAddresses",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1167,45 +1318,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "whitelisted",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "whitelistedAmountMinted",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
+        "name": "_addr",
         "type": "address"
       },
       {
@@ -1214,37 +1327,22 @@
         "type": "uint16"
       },
       {
-        "internalType": "uint32",
-        "name": "_hatchingDuration",
-        "type": "uint32"
-      },
-      {
         "internalType": "string[]",
-        "name": "_nbmonStats",
+        "name": "_stringMetadata",
         "type": "string[]"
       },
       {
-        "internalType": "string[]",
-        "name": "_types",
-        "type": "string[]"
+        "internalType": "uint256[]",
+        "name": "_numericMetadata",
+        "type": "uint256[]"
       },
       {
-        "internalType": "uint8[]",
-        "name": "_potential",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "_passives",
-        "type": "string[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_isEgg",
-        "type": "bool"
+        "internalType": "bool[]",
+        "name": "_boolMetadata",
+        "type": "bool[]"
       }
     ],
-    "name": "whitelistedGenesisEggMint",
+    "name": "whitelistedMint",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1263,14 +1361,39 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "whitelistedMintingPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawFunds",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "_to",
+        "name": "_tokenAddr",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
       }
     ],
-    "name": "withdrawFunds",
+    "name": "withdrawTokens",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
