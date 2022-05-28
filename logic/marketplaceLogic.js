@@ -30,7 +30,7 @@ const getItemsOnSale = async () => {
 }
 
 // gets a 256-byte salt, used inside listingHash when listing an item on sale.
-const txSalt = () => {
+const generateTxSalt = () => {
     console.log(crypto.randomBytes(256).toString('hex'));
 }
 
@@ -83,7 +83,7 @@ const deleteItemOnSale = async (tokenId) => {
 }
 
 module.exports = {
-    txSalt,
+    generateTxSalt,
     addItemOnSale,
     deleteItemOnSale,
     getItemsOnSale
