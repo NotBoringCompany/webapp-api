@@ -1,30 +1,33 @@
-require('dotenv').config();
 const Moralis = require("moralis/node");
-const ethers = require("ethers");
-const fs = require("fs");
-const path = require("path");
 const crypto = require("crypto");
-const query = require('express/lib/middleware/query');
-
-const moralisAPINode = process.env.MORALIS_APINODE;
-const pvtKey = process.env.PRIVATE_KEY_1;
-// rinkeby URL connected with Moralis
-const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
-const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
-
-const genesisNBMonABI = fs.readFileSync(
-	path.resolve(__dirname, "../abi/genesisNBMon.json")
-);
-const genesisABI = JSON.parse(genesisNBMonABI);
-const genesisContract = new ethers.Contract(
-	process.env.CONTRACT_ADDRESS,
-	genesisABI,
-	customHttpProvider
-);
-
 
 /// @dev Currently this API only focuses on the genesis NBMon contract. once refactored, it should have flexibility to list all the items on sale 
 /// for different contracts.
+
+// gets all items currently on sale
+const getItemsOnSale = async () => {
+    try {
+        const query = new Moralis.Query("ItemsOnSale");
+        const queryPipeline = [
+            { match: {} },
+            { project: {
+                _id: 0,
+                NFT_Contract: 1,
+                Token_ID: 1,
+                Payment_Token: 1,
+                Seller: 1,
+                Price: 1,
+                TX_Salt: 1,
+                Signature: 1
+            } }
+        ];
+
+        const queryPipelineAggRes = await query.aggregate(queryPipeline);
+        return queryPipelineAggRes;
+    } catch (err) {
+        throw new Error(err.stack);
+    }
+}
 
 // gets a 256-byte salt, used inside listingHash when listing an item on sale.
 const txSalt = () => {
@@ -69,47 +72,15 @@ const deleteItemOnSale = async (tokenId) => {
 
         if (item) {
             item.destroy({ useMasterKey: true }).then(() => {
-                console.log(`ID ${tokenId} deleted from ItemsOnSale`);
+                return `ID ${tokenId} deleted from ItemsOnSale`;
             }), (err) => {
-                console.log(err);
+                throw new Error(err.stack);
             }
         }
     } catch (err) {
-        console.log(err);
+        throw new Error(err.stack);
     }
 }
-
-const getItemsOnSale = async () => {
-    try {
-
-        const serverUrl = process.env.MORALIS_SERVERURL;
-        const appId = process.env.MORALIS_APPID;
-        const masterKey = process.env.MORALIS_MASTERKEY;
-
-        await Moralis.start({ serverUrl, appId, masterKey });
-        const query = new Moralis.Query("ItemsOnSale");
-        const queryPipeline = [
-            { match: {} },
-            { project: {
-                _id: 0,
-                NFT_Contract: 1,
-                Token_ID: 1,
-                Payment_Token: 1,
-                Seller: 1,
-                Price: 1,
-                TX_Salt: 1,
-                Signature: 1
-            } }
-        ];
-
-        const queryPipelineAggRes = await query.aggregate(queryPipeline);
-        console.log(queryPipelineAggRes);
-    } catch (err) {
-        console.log(err);
-    }
-}
-
-getItemsOnSale();
 
 module.exports = {
     txSalt,
