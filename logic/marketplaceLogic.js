@@ -63,15 +63,9 @@ const addItemOnSale = async (
 // deletes an item after being sold or cancelled.
 const deleteItemOnSale = async (tokenId) => {
     try {
-        const serverUrl = process.env.MORALIS_SERVERURL;
-        const appId = process.env.MORALIS_APPID;
-        const masterKey = process.env.MORALIS_MASTERKEY;
-
-        await Moralis.start({ serverUrl, appId, masterKey });
-        
-        const query = new Moralis.Query("ItemsOnSale");
-        query.equalTo("Token_ID", tokenId);
-        const item = await query.first({ useMasterKey: true });
+        const itemsQuery = new Moralis.Query("ItemsOnSale");
+        itemsQuery.equalTo("Token_ID", tokenId);
+        const item = await itemsQuery.first({ useMasterKey: true });
 
         if (item) {
             item.destroy({ useMasterKey: true }).then(() => {
@@ -85,10 +79,41 @@ const deleteItemOnSale = async (tokenId) => {
     }
 }
 
-deleteItemOnSale(2);
+const getItemsOnSale = async () => {
+    try {
+
+        const serverUrl = process.env.MORALIS_SERVERURL;
+        const appId = process.env.MORALIS_APPID;
+        const masterKey = process.env.MORALIS_MASTERKEY;
+
+        await Moralis.start({ serverUrl, appId, masterKey });
+        const query = new Moralis.Query("ItemsOnSale");
+        const queryPipeline = [
+            { match: {} },
+            { project: {
+                _id: 0,
+                NFT_Contract: 1,
+                Token_ID: 1,
+                Payment_Token: 1,
+                Seller: 1,
+                Price: 1,
+                TX_Salt: 1,
+                Signature: 1
+            } }
+        ];
+
+        const queryPipelineAggRes = await query.aggregate(queryPipeline);
+        console.log(queryPipelineAggRes);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+getItemsOnSale();
 
 module.exports = {
     txSalt,
     addItemOnSale,
-    deleteItemOnSale
+    deleteItemOnSale,
+    getItemsOnSale
 };
