@@ -31,7 +31,7 @@ const getItemsOnSale = async () => {
 
 // gets a 256-byte salt, used inside listingHash when listing an item on sale.
 const generateTxSalt = () => {
-    console.log(crypto.randomBytes(256).toString('hex'));
+    return crypto.randomBytes(256).toString('hex');
 }
 
 // adds an item on sale and store it to Moralis, along with the txSalt and signature.
