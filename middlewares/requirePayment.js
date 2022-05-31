@@ -10,13 +10,13 @@ const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const paymentReceived = async (req, res, next) => {
 	try {
-		const { txHash, purchaserAddress } = req.body;
+		const { txHash, purchaserAddress, txGasFee } = req.body;
 
 		let txReceipt = await customHttpProvider.getTransaction(txHash);
 		if (txReceipt && txReceipt.blockNumber) {
 			// ensures that the user has actually sent the correct amount (minting price) to proceed.
 			if (
-				parseFloat(ethers.utils.formatEther(txReceipt.value)) === mintingPrice &&
+				parseFloat(ethers.utils.formatEther(txReceipt.value)) === (mintingPrice + txGasFee) &&
 				txReceipt.to === receiverWallet &&
 				txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 			) {
