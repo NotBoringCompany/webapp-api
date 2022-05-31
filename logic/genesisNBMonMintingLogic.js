@@ -23,35 +23,22 @@ const genesisContract = new ethers.Contract(
 
 const whitelistedMint = async (address) => {
 	try {
+		// signed by minter
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
 		let owner = address;
 		let amountToMint = 1;
-		let hatchingDuration = 300;
-		let nbmonStats = [];
-		let types = [];
-		let potential = [];
-		let passives = [];
-		let isEgg = true;
+		let stringMetadata = ["","","","","","","","",""];
+		// hatching duration for now is 300, will be longer later.
+		let numericMetadata = [300,"","","","","","","","",""];
+		let boolMetadata = [true];
 
-		let unsignedTx =
-			await genesisContract.populateTransaction.whitelistedGenesisEggMint(
-				owner,
-				amountToMint,
-				hatchingDuration,
-				nbmonStats,
-				types,
-				potential,
-				passives,
-				isEgg
-			);
-		let response = await signer.sendTransaction(unsignedTx);
+		let unsignedTx = await genesisContract.populateTransaction.whitelistedMint(owner, amountToMint, stringMetadata, numericMetadata, boolMetadata);
+		let response = signer.sendTransaction(unsignedTx);
 		await response.wait();
 
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
 		const jsonResponse = JSON.parse(JSON.stringify(response));
-		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
-		//Parseplatform is used by Moralis' DB
 
 		//Upon successful minting
 		await addToActivities(
@@ -61,59 +48,41 @@ const whitelistedMint = async (address) => {
 			process.env.MINTING_PRICE
 		);
 
-		const currentCount = await genesisContract.currentGenesisNBMonCount();
+		const currentCount = await genesisContract._currentIndex();
 		// just to be extra safe
 		const mintedId = parseInt(currentCount) - 1;
+		if (!mintedId || mintedId === undefined || isNaN(mintedId)) {
+			throw new Error("minted ID is undefined");
+		}
 
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, hatchingDuration);
 
 		return { nbmonId: mintedId };
 	} catch (err) {
-		return err;
+		throw new Error(err.stack);
 	}
-};
+}
 
 const publicMint = async (address) => {
 	try {
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
-
-		console.log("signer ", signer.address);
-
 		let owner = address;
 		let amountToMint = 1;
-		let hatchingDuration = 300;
-		let nbmonStats = [];
-		let types = [];
-		let potential = [];
-		let passives = [];
-		let isEgg = true;
+		let stringMetadata = ["","","","","","","","",""];
+		// hatching duration for now is 300, will be longer later.
+		let numericMetadata = [300,"","","","","","","","",""];
+		let boolMetadata = [true];
 
-		console.log(nbmonStats, types, potential, passives);
-
-		let unsignedTx =
-			await genesisContract.populateTransaction.publicGenesisEggMint(
-				owner,
-				amountToMint,
-				hatchingDuration,
-				nbmonStats,
-				types,
-				potential,
-				passives,
-				isEgg
-			);
-		let response = await signer.sendTransaction(unsignedTx);
+		let unsignedTx = await genesisContract.populateTransaction.publicMint(owner, amountToMint, stringMetadata, numericMetadata, boolMetadata);
+		let response = signer.sendTransaction(unsignedTx);
 		await response.wait();
-
-		console.log("response is here ", response.data);
 
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
 		const jsonResponse = JSON.parse(JSON.stringify(response));
 		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
 		//Parseplatform is used by Moralis' DB
-
-		console.log("json Response ", jsonResponse);
 
 		//Upon successful minting
 		await addToActivities(
@@ -123,22 +92,20 @@ const publicMint = async (address) => {
 			process.env.MINTING_PRICE
 		);
 
-		console.log("successfully added to activities");
-
 		const currentCount = await genesisContract.currentGenesisNBMonCount();
 		// just to be extra safe
 		const mintedId = parseInt(currentCount) - 1;
 		if (!mintedId || mintedId === undefined || isNaN(mintedId)) {
-			console.log("Error nbmonId", mintedId);
+			throw new Error("minted ID is undefined");
 		}
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, hatchingDuration);
 
 		return { nbmonId: mintedId };
 	} catch (err) {
-		return err;
+		throw new Error(err.stack);
 	}
-};
+}
 
 module.exports = {
 	whitelistedMint,
