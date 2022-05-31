@@ -75,7 +75,7 @@ const saveHatchingKey = async (key) => {
 	newHatchingKey.set("key", key);
 	newHatchingKey.set("addedToActivity", false);
 
-	await newHatchingKey.save(null, { useMasterKey: true }).catch((err) => err);
+	await newHatchingKey.save(null, { useMasterKey: true });
 };
 
 const addToActivities = async (
@@ -142,9 +142,7 @@ const addToActivities = async (
 				newActivity.set("timestamp", block_timestamp);
 
 				//Saves using master key (due to CLP being only "read" for only public)
-				await newActivity
-					.save(null, { useMasterKey: true })
-					.catch((err) => err);
+				await newActivity.save(null, { useMasterKey: true });
 
 				await invalidateHatchingKey(decodedKey);
 
@@ -154,7 +152,7 @@ const addToActivities = async (
 			}
 		}
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err.message;
 	}
 };
 
@@ -225,7 +223,7 @@ const invalidateHatchingKey = async (key) => {
 		hatchingQueryResult.set("addedToActivity", true);
 	}
 
-	await hatchingQueryResult.save({ useMasterKey: true });
+	await hatchingQueryResult.save(null, { useMasterKey: true });
 };
 
 module.exports = {

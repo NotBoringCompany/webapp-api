@@ -12,12 +12,14 @@ const port = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
+const account = require("./routes/account");
 const genesisNBMon = require("./routes/genesisNBMon");
 const genesisNBMonMinting = require("./routes/genesisNBMonMinting");
 const activities = require("./routes/activities");
 const typeEffectiveness = require("./routes/typeEffectiveness");
 const genesisNBMonHatching = require("./routes/genesisNBMonHatching");
 
+app.use("/account", account);
 app.use("/genesisNBMon", genesisNBMon);
 app.use("/genesisNBMonMinting", genesisNBMonMinting);
 app.use("/activities", activities);

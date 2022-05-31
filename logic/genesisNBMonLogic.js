@@ -114,9 +114,9 @@ const getGenesisNBMon = async (id) => {
 		nbmonObj["speedPotential"] = parseInt(Number(nbmon["numericMetadata"][7])) === undefined ? null : parseInt(Number(nbmon["numericMetadata"][7]))
 		nbmonObj["isEgg"] = nbmon["boolMetadata"][0];
 
-		console.log(nbmonObj);
+		return nbmonObj;
 	} catch (err) {
-		console.log(err);
+		throw new Error(err.stack);
 	}
 }
 
@@ -130,7 +130,7 @@ const getOwnerGenesisNBMonIDs = async (address) => {
 		}
 		return convertedArray;
 	} catch (err) {
-		return err;
+		throw new Error(err.stack);
 	}
 };
 
@@ -149,7 +149,7 @@ const getOwnerGenesisNBMons = async (address) => {
 
 		return nbmons;
 	} catch (err) {
-		return err;
+		throw new Error(err.stack);
 	}
 };
 
@@ -206,7 +206,7 @@ const getGenesisBehavior = async (genusParam) => {
 			return null;
 		}
 	} catch (err) {
-		return err;
+		throw new Error(err.stack);
 	}
 };
 
@@ -227,7 +227,7 @@ const getGenesisFertilityDeduction = async (rarity) => {
 				return 300;
 		}
 	} catch (err) {
-		return err;
+		throw new Error(err.stack);
 	}
 };
 
