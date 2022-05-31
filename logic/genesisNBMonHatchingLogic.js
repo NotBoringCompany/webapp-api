@@ -22,44 +22,83 @@ const genesisContract = new ethers.Contract(
 	customHttpProvider
 );
 
-// hatches the nbmon from an egg and gives it its respective stats
-const randomizeHatchingStats = async () => {
+const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 	try {
-		const key = uuidv4();
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
-		const gender = (await genesisStatRandomizer.randomizeGenesisGender()).toString();
-		const rarity = (await genesisStatRandomizer.randomizeGenesisRarity()).toString();
-		const genus = (await genesisStatRandomizer.randomizeGenesisGenus()).toString();
-		const mutation = (await genesisStatRandomizer.randomizeGenesisMutation(genus)).toString();
+		const gender = (await genesisStatRandomizer.randomizeGenesisGender());
+		const rarity = (await genesisStatRandomizer.randomizeGenesisRarity());
+		const genus = (await genesisStatRandomizer.randomizeGenesisGenus());
+		const mutation = (await genesisStatRandomizer.randomizeGenesisMutation(genus));
 		const species = "Origin";
-		const fertility = "3000";
-		const nbmonStats = [gender, rarity, mutation, species, genus, fertility];
+		const fertility = 3000;
 
 		const types = await getGenesisNBMonTypes(genus);
+		const { typeOne, typeTwo } = (types[0], types[1]);
 		const potential = await genesisStatRandomizer.randomizeGenesisPotential(rarity);
+		const { 
+			healthPotential, 
+			energyPotential, 
+			atkPotential, 
+			defPotential, 
+			spAtkPotential, 
+			spDefPotential, 
+			speedPotential 
+		} = (potential[0], potential[1], potential[2], potential[3], potential[4], potential[5], potential[6]);
 		const passives = await genesisStatRandomizer.randomizeGenesisPassives();
+		const { passiveOne, passiveTwo } = (passives[0], passives[1]);
 
-		let unsignedTx = await genesisContract.populateTransaction.addValidKey(
-			key,
-			nbmonStats,
-			types,
-			potential,
-			passives
-		);
-		let response = await signer.sendTransaction(unsignedTx);
-		let minedResponse = await response.wait();
+		//pack all of the calculated data into the metadata arrays
+		const stringMetadata = [gender, rarity, mutation, species, genus, typeOne, typeTwo, passiveOne, passiveTwo];
+		// 300 = hatchingDuration (will change later on)
+		// 0 (at the last index) = hatchedAt. will get changed when actually hatched
+		const numericMetadata = [300, healthPotential, energyPotential, atkPotential, defPotential, spAtkPotential, spDefPotential, speedPotential, fertility, 0];
 
-		//Upon successful minting
-		await saveHatchingKey(key);
+		//get bornAt to match sig
+		const nbmon = await genesisContract.getNFT(nbmonId);
+		const bornAt = parseInt(Number(nbmon["bornAt"]));
+		let unsignedTx = await genesisContract.populateTransaction.addHatchingStats(
+			nbmonId,
+			signer.address,
+			bornAt,
+			txSalt,
+			signature,
 
-		return {
-			response: minedResponse,
-			key: key,
-		};
+
+		)
+
+		console.log(typeof rarity);
 	} catch (err) {
-		return err;
+		throw new Error(err.stack);
 	}
-};
+}
+
+// hatches the nbmon from an egg and gives it its respective stats
+// const randomizeHatchingStats = async () => {
+// 	try {
+
+// 		let unsignedTx = await genesisContract.populateTransaction.addValidKey(
+// 			key,
+// 			nbmonStats,
+// 			types,
+// 			potential,
+// 			passives
+// 		);
+// 		let response = await signer.sendTransaction(unsignedTx);
+// 		let minedResponse = await response.wait();
+
+// 		//Upon successful minting
+// 		await saveHatchingKey(key);
+
+// 		return {
+// 			response: minedResponse,
+// 			key: key,
+// 		};
+// 	} catch (err) {
+// 		return err;
+// 	}
+// };
+
+randomizeHatchingStats();
 
 module.exports = {
 	randomizeHatchingStats,

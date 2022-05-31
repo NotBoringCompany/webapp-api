@@ -163,10 +163,10 @@ const getGenesisNBMonTypes = async (genusParam) => {
 		];
 
 		const typesAggRes = await typesQuery.aggregate(typesPipeline);
-
 		return typesAggRes[0]["Types"];
+		// console.log(typesAggRes[0]["Types"][0]);
 	} catch (err) {
-		return err;
+		throw new Error(err.stack);
 	}
 };
 
@@ -336,7 +336,7 @@ const canMintUserWhitelisted = (
 	return false;
 };
 
-getGenesisNBMon(1);
+getGenesisNBMonTypes("Lamox");
 
 module.exports = {
 	getGenesisNBMon,
