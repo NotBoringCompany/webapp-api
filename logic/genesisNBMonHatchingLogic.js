@@ -6,6 +6,7 @@ const path = require("path");
 const genesisStatRandomizer = require("../calculations/genesisStatRandomizer");
 const { saveHatchingKey } = require("../logic/activitiesLogic");
 const { getGenesisNBMonTypes } = require("./genesisNBMonLogic");
+const { providers } = require("moralis/node_modules/ethers");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
@@ -47,11 +48,12 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 		const passives = await genesisStatRandomizer.randomizeGenesisPassives();
 		const { passiveOne, passiveTwo } = (passives[0], passives[1]);
 
+		const hatchedTimestamp = (await customHttpProvider.getBlock(blockNumber)).timestamp;
+
 		//pack all of the calculated data into the metadata arrays
 		const stringMetadata = [gender, rarity, mutation, species, genus, typeOne, typeTwo, passiveOne, passiveTwo];
-		// 300 = hatchingDuration (will change later on)
-		// 0 (at the last index) = hatchedAt. will get changed when actually hatched
-		const numericMetadata = [300, healthPotential, energyPotential, atkPotential, defPotential, spAtkPotential, spDefPotential, speedPotential, fertility, 0];
+		const numericMetadata = [0, healthPotential, energyPotential, atkPotential, defPotential, spAtkPotential, spDefPotential, speedPotential, fertility, hatchedTimestamp];
+		const boolMetadata = [false];
 
 		//get bornAt to match sig
 		const nbmon = await genesisContract.getNFT(nbmonId);
@@ -62,41 +64,21 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 			bornAt,
 			txSalt,
 			signature,
+			stringMetadata,
+			numericMetadata,
+			boolMetadata
+		);
+		let response = await signer.sendTransaction(unsignedTx);
+		let minedResponse = await response.wait();
 
-
-		)
-
-		console.log(typeof rarity);
+		return {
+			response: minedResponse,
+			signature: signature
+		}
 	} catch (err) {
 		throw new Error(err.stack);
 	}
 }
-
-// hatches the nbmon from an egg and gives it its respective stats
-// const randomizeHatchingStats = async () => {
-// 	try {
-
-// 		let unsignedTx = await genesisContract.populateTransaction.addValidKey(
-// 			key,
-// 			nbmonStats,
-// 			types,
-// 			potential,
-// 			passives
-// 		);
-// 		let response = await signer.sendTransaction(unsignedTx);
-// 		let minedResponse = await response.wait();
-
-// 		//Upon successful minting
-// 		await saveHatchingKey(key);
-
-// 		return {
-// 			response: minedResponse,
-// 			key: key,
-// 		};
-// 	} catch (err) {
-// 		return err;
-// 	}
-// };
 
 randomizeHatchingStats();
 
