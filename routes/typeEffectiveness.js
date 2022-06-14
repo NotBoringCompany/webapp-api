@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getAttackEffectiveness, getDefenseEffectiveness, testQuery } = require("../logic/typeEffectivenessLogic");
+const { getAttackEffectiveness, getDefenseEffectiveness } = require("../logic/typeEffectivenessLogic");
 
 router.get("/getAttackEffectiveness/:firstType/:secondType", async (req, res) => {
     let firstType = req.params.firstType;
