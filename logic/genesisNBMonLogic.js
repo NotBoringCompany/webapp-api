@@ -39,7 +39,9 @@ const getGenesisNBMon = async (id) => {
 		/// calculates if nbmon is hatchable
 		let now = moment().unix();
 		// gets hatchingDuration + bornAt timestamp = time when nbmon is hatchable
-		let hatchableTime = parseInt(Number(nbmon["numericMetadata"][0])) + parseInt(Number(nbmon["bornAt"]));
+		let hatchableTime =
+			parseInt(Number(nbmon["numericMetadata"][0])) +
+			parseInt(Number(nbmon["bornAt"]));
 
 		nbmonObj["nbmonId"] = parseInt(Number(nbmon["tokenId"]));
 		nbmonObj["owner"] = nbmon["owner"];
@@ -55,11 +57,19 @@ const getGenesisNBMon = async (id) => {
 		}
 
 		nbmonObj["transferredAt"] = parseInt(Number(nbmon["transferredAt"]));
-		nbmonObj["hatchingDuration"] = parseInt(Number(nbmon["numericMetadata"][0]));
+		nbmonObj["hatchingDuration"] = parseInt(
+			Number(nbmon["numericMetadata"][0])
+		);
 
 		/// will most likely only show when hatched, hence the extra check for undefined values
-		const firstType = nbmon["stringMetadata"][5] === undefined ? null : nbmon["stringMetadata"][5];
-		const secondType = nbmon["stringMetadata"][6] === undefined ? null : nbmon["stringMetadata"][6];
+		const firstType =
+			nbmon["stringMetadata"][5] === undefined
+				? null
+				: nbmon["stringMetadata"][5];
+		const secondType =
+			nbmon["stringMetadata"][6] === undefined
+				? null
+				: nbmon["stringMetadata"][6];
 		let types = [firstType, secondType];
 
 		nbmonObj["types"] = types;
@@ -74,51 +84,101 @@ const getGenesisNBMon = async (id) => {
 		nbmonObj["vulnerableTo"] = defenseEff["Vulnerable to"];
 
 		// gets passives. same like types - checks for undefined values.
-		firstPassive = nbmon["stringMetadata"][7] === undefined ? null : nbmon["stringMetadata"][7];
-		secondPassive = nbmon["stringMetadata"][8] === undefined ? null : nbmon["stringMetadata"][8];
+		firstPassive =
+			nbmon["stringMetadata"][7] === undefined
+				? null
+				: nbmon["stringMetadata"][7];
+		secondPassive =
+			nbmon["stringMetadata"][8] === undefined
+				? null
+				: nbmon["stringMetadata"][8];
 		let passives = [firstPassive, secondPassive];
 
 		nbmonObj["passives"] = passives;
-		nbmonObj["gender"] = nbmon["stringMetadata"][0] === undefined ? null : nbmon["stringMetadata"][0];
-		nbmonObj["rarity"] = nbmon["stringMetadata"][1] === undefined ? null : nbmon["stringMetadata"][1];
+		nbmonObj["gender"] =
+			nbmon["stringMetadata"][0] === undefined
+				? null
+				: nbmon["stringMetadata"][0];
+		nbmonObj["rarity"] =
+			nbmon["stringMetadata"][1] === undefined
+				? null
+				: nbmon["stringMetadata"][1];
 
 		// mutation calculation
 		// if nbmon is still an egg
 		if (nbmon["boolMetadata"][0] === true) {
 			nbmonObj["mutation"] = "Not mutated";
 			nbmonObj["mutationType"] = null;
-		// if already hatched
+			// if already hatched
 		} else {
-			nbmonObj["mutation"] = nbmon["stringMetadata"][2] === "Not mutated" ? nbmon["stringMetadata"][2] : "Mutated";
-			nbmonObj["mutationType"] = nbmonObj["mutation"] === "Mutated" ? nbmon["stringMetadata"][2] : null;
+			nbmonObj["mutation"] =
+				nbmon["stringMetadata"][2] === "Not mutated"
+					? nbmon["stringMetadata"][2]
+					: "Mutated";
+			nbmonObj["mutationType"] =
+				nbmonObj["mutation"] === "Mutated" ? nbmon["stringMetadata"][2] : null;
 		}
 
-		nbmonObj["species"] = nbmon["stringMetadata"][3] === undefined ? null : nbmon["stringMetadata"][3];
-		nbmonObj["genus"] = nbmon["stringMetadata"][4] === undefined ? null : nbmon["stringMetadata"][4];
-		nbmonObj["genusDescription"] = await getGenesisGenusDescription(nbmonObj["genus"]);
+		nbmonObj["species"] =
+			nbmon["stringMetadata"][3] === undefined
+				? null
+				: nbmon["stringMetadata"][3];
+		nbmonObj["genus"] =
+			nbmon["stringMetadata"][4] === undefined
+				? null
+				: nbmon["stringMetadata"][4];
+		nbmonObj["genusDescription"] = await getGenesisGenusDescription(
+			nbmonObj["genus"]
+		);
 		nbmonObj["bevahior"] = await getGenesisBehavior(nbmonObj["genus"]);
 
 		// fertility calculation
-		nbmonObj["fertility"] = parseInt(Number(nbmon["numericMetadata"][8])) === undefined ? null : parseInt(Number(nbmon["numericMetadata"][8]));
+		nbmonObj["fertility"] =
+			parseInt(Number(nbmon["numericMetadata"][8])) === undefined
+				? null
+				: parseInt(Number(nbmon["numericMetadata"][8]));
 		if (nbmon["stringMetadata"][1] !== undefined) {
-			nbmonObj["fertilityDeduction"] = await getGenesisFertilityDeduction(nbmon["stringMetadata"][1]);
+			nbmonObj["fertilityDeduction"] = await getGenesisFertilityDeduction(
+				nbmon["stringMetadata"][1]
+			);
 		} else {
 			nbmonObj["fertilityDeduction"] = null;
 		}
-		nbmonObj["healthPotential"] = parseInt(Number(nbmon["numericMetadata"][1])) === undefined ? null : parseInt(Number(nbmon["numericMetadata"][1]))
-		nbmonObj["energyPotential"] = parseInt(Number(nbmon["numericMetadata"][2])) === undefined ? null : parseInt(Number(nbmon["numericMetadata"][2]))
-		nbmonObj["attackPotential"] = parseInt(Number(nbmon["numericMetadata"][3])) === undefined ? null : parseInt(Number(nbmon["numericMetadata"][3]))
-		nbmonObj["defensePotential"] = parseInt(Number(nbmon["numericMetadata"][4])) === undefined ? null : parseInt(Number(nbmon["numericMetadata"][4]))
-		nbmonObj["spAtkPotential"] = parseInt(Number(nbmon["numericMetadata"][5])) === undefined ? null : parseInt(Number(nbmon["numericMetadata"][5]))
-		nbmonObj["spDefPotential"] = parseInt(Number(nbmon["numericMetadata"][6])) === undefined ? null : parseInt(Number(nbmon["numericMetadata"][6]))
-		nbmonObj["speedPotential"] = parseInt(Number(nbmon["numericMetadata"][7])) === undefined ? null : parseInt(Number(nbmon["numericMetadata"][7]))
+		nbmonObj["healthPotential"] =
+			parseInt(Number(nbmon["numericMetadata"][1])) === undefined
+				? null
+				: parseInt(Number(nbmon["numericMetadata"][1]));
+		nbmonObj["energyPotential"] =
+			parseInt(Number(nbmon["numericMetadata"][2])) === undefined
+				? null
+				: parseInt(Number(nbmon["numericMetadata"][2]));
+		nbmonObj["attackPotential"] =
+			parseInt(Number(nbmon["numericMetadata"][3])) === undefined
+				? null
+				: parseInt(Number(nbmon["numericMetadata"][3]));
+		nbmonObj["defensePotential"] =
+			parseInt(Number(nbmon["numericMetadata"][4])) === undefined
+				? null
+				: parseInt(Number(nbmon["numericMetadata"][4]));
+		nbmonObj["spAtkPotential"] =
+			parseInt(Number(nbmon["numericMetadata"][5])) === undefined
+				? null
+				: parseInt(Number(nbmon["numericMetadata"][5]));
+		nbmonObj["spDefPotential"] =
+			parseInt(Number(nbmon["numericMetadata"][6])) === undefined
+				? null
+				: parseInt(Number(nbmon["numericMetadata"][6]));
+		nbmonObj["speedPotential"] =
+			parseInt(Number(nbmon["numericMetadata"][7])) === undefined
+				? null
+				: parseInt(Number(nbmon["numericMetadata"][7]));
 		nbmonObj["isEgg"] = nbmon["boolMetadata"][0];
 
 		return nbmonObj;
 	} catch (err) {
 		throw new Error(err.stack);
 	}
-}
+};
 
 const getOwnerGenesisNBMonIDs = async (address) => {
 	try {
@@ -335,8 +395,6 @@ const canMintUserWhitelisted = (
 	//(this is most likely will never be called)
 	return false;
 };
-
-getGenesisNBMonTypes("Lamox");
 
 module.exports = {
 	getGenesisNBMon,

@@ -26,33 +26,66 @@ const genesisContract = new ethers.Contract(
 const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 	try {
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
-		const gender = (await genesisStatRandomizer.randomizeGenesisGender());
-		const rarity = (await genesisStatRandomizer.randomizeGenesisRarity());
-		const genus = (await genesisStatRandomizer.randomizeGenesisGenus());
-		const mutation = (await genesisStatRandomizer.randomizeGenesisMutation(genus));
+		const gender = await genesisStatRandomizer.randomizeGenesisGender();
+		const rarity = await genesisStatRandomizer.randomizeGenesisRarity();
+		const genus = await genesisStatRandomizer.randomizeGenesisGenus();
+		const mutation = await genesisStatRandomizer.randomizeGenesisMutation(
+			genus
+		);
 		const species = "Origin";
 		const fertility = 3000;
 
 		const types = await getGenesisNBMonTypes(genus);
 		const { typeOne, typeTwo } = (types[0], types[1]);
-		const potential = await genesisStatRandomizer.randomizeGenesisPotential(rarity);
-		const { 
-			healthPotential, 
-			energyPotential, 
-			atkPotential, 
-			defPotential, 
-			spAtkPotential, 
-			spDefPotential, 
-			speedPotential 
-		} = (potential[0], potential[1], potential[2], potential[3], potential[4], potential[5], potential[6]);
+		const potential = await genesisStatRandomizer.randomizeGenesisPotential(
+			rarity
+		);
+		const {
+			healthPotential,
+			energyPotential,
+			atkPotential,
+			defPotential,
+			spAtkPotential,
+			spDefPotential,
+			speedPotential,
+		} =
+			(potential[0],
+			potential[1],
+			potential[2],
+			potential[3],
+			potential[4],
+			potential[5],
+			potential[6]);
 		const passives = await genesisStatRandomizer.randomizeGenesisPassives();
 		const { passiveOne, passiveTwo } = (passives[0], passives[1]);
 
-		const hatchedTimestamp = (await customHttpProvider.getBlock(blockNumber)).timestamp;
+		const hatchedTimestamp = (await customHttpProvider.getBlock(blockNumber))
+			.timestamp;
 
 		//pack all of the calculated data into the metadata arrays
-		const stringMetadata = [gender, rarity, mutation, species, genus, typeOne, typeTwo, passiveOne, passiveTwo];
-		const numericMetadata = [0, healthPotential, energyPotential, atkPotential, defPotential, spAtkPotential, spDefPotential, speedPotential, fertility, hatchedTimestamp];
+		const stringMetadata = [
+			gender,
+			rarity,
+			mutation,
+			species,
+			genus,
+			typeOne,
+			typeTwo,
+			passiveOne,
+			passiveTwo,
+		];
+		const numericMetadata = [
+			0,
+			healthPotential,
+			energyPotential,
+			atkPotential,
+			defPotential,
+			spAtkPotential,
+			spDefPotential,
+			speedPotential,
+			fertility,
+			hatchedTimestamp,
+		];
 		const boolMetadata = [false];
 
 		//get bornAt to match sig
@@ -73,14 +106,12 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 
 		return {
 			response: minedResponse,
-			signature: signature
-		}
+			signature: signature,
+		};
 	} catch (err) {
 		throw new Error(err.stack);
 	}
-}
-
-randomizeHatchingStats();
+};
 
 module.exports = {
 	randomizeHatchingStats,
