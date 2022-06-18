@@ -58,7 +58,7 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 			potential[6]);
 		const passives = await genesisStatRandomizer.randomizeGenesisPassives();
 		const { passiveOne, passiveTwo } = (passives[0], passives[1]);
-
+		const blockNumber = await customHttpProvider.getBlockNumber();
 		const hatchedTimestamp = (await customHttpProvider.getBlock(blockNumber))
 			.timestamp;
 
