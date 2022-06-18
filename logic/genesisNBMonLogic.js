@@ -326,14 +326,30 @@ const generalConfig = async () => {
 const config = async (address) => {
 	try {
 		const generalConfigs = await generalConfig();
+		const isBlackListed = await genesisContract.checkBlacklisted(address);
+		const amountMinted = await genesisContract.checkAmountMinted(address);
+		const hasMintedFive = amountMinted === 5 ? true : false;
+
+		if (isBlackListed) {
+			const status = {
+				address,
+				canMint: false,
+				isWhitelisted: false,
+				amountMinted,
+				hasMintedFive,
+			};
+
+			return { status, ...generalConfigs };
+		}
+
+		const { haveBeenMinted, supplyLimit } = generalConfigs.supplies;
 		const { isWhitelistOpen, isPublicOpen, isMintingEnded } =
 			generalConfigs.timeStamps;
-		const { haveBeenMinted, supplyLimit } = generalConfigs.supplies;
-		const isWhitelisted = await genesisContract.whitelisted(address);
 
-		const amountMinted = await genesisContract.amountMinted(address);
-
-		const hasMintedFive = amountMinted === 5 ? true : false;
+		const isWhitelisted = await genesisContract.checkWhitelisted(address);
+		const isProfileRegistered = await genesisContract.profileRegistered(
+			address
+		);
 		let canMint = false;
 
 		if (hasMintedFive || isMintingEnded) canMint = false;
@@ -358,9 +374,10 @@ const config = async (address) => {
 
 		const status = {
 			address,
-			canMint,
+			canMint: canMint && isProfileRegistered,
 			isWhitelisted,
 			amountMinted,
+			isProfileRegistered,
 			hasMintedFive,
 		};
 
