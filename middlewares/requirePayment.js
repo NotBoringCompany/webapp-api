@@ -14,10 +14,13 @@ const paymentReceived = async (req, res, next) => {
 		const { purchaseType, txHash, purchaserAddress, txGasFee } = req.body;
 		
 		let txReceipt = await customHttpProvider.getTransaction(txHash);
+
 		if (txReceipt && txReceipt.blockNumber) {
 			if (purchaseType === "whitelisted") {
+				let txValue = parseFloat(ethers.utils.formatEther(txReceipt.value));
+				let totalFee = parseFloat((whitelistedMintingPrice + txGasFee).toFixed(3));
 				if (
-					parseFloat(ethers.utils.formatEther(txReceipt.value)) === (whitelistedMintingPrice + txGasFee) &&
+					txValue === totalFee &&
 					txReceipt.to === receiverWallet &&
 					txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 				) {
@@ -29,8 +32,10 @@ const paymentReceived = async (req, res, next) => {
 					});
 				}
 			} else if (purchaseType === "public") {
+				let txValue = parseFloat(ethers.utils.formatEther(txReceipt.value));
+				let totalFee = parseFloat((publicMintingPrice + txGasFee).toFixed(3));
 				if (
-					parseFloat(ethers.utils.formatEther(txReceipt.value)) === (publicMintingPrice + txGasFee) &&
+					txValue === totalFee &&
 					txReceipt.to === receiverWallet &&
 					txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 				) {

@@ -29,12 +29,12 @@ const whitelistedMint = async (address) => {
 		let amountToMint = 1;
 		let stringMetadata = ["","","","","","","","",""];
 		// hatching duration for now is 300, will be longer later.
-		let numericMetadata = [300,"","","","","","","","",""];
+		let numericMetadata = [300,0,0,0,0,0,0,0,0,0];
 		let boolMetadata = [true];
 
 		let unsignedTx = await genesisContract.populateTransaction.whitelistedMint(owner, amountToMint, stringMetadata, numericMetadata, boolMetadata);
 		let response = signer.sendTransaction(unsignedTx);
-		await response.wait();
+		(await response).wait();
 
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
@@ -56,7 +56,7 @@ const whitelistedMint = async (address) => {
 		}
 
 		//add metadata of the egg to Spaces
-		uploadGenesisEggMetadata(mintedId, hatchingDuration);
+		// uploadGenesisEggMetadata(mintedId, hatchingDuration);
 
 		return { nbmonId: mintedId };
 	} catch (err) {
@@ -71,35 +71,36 @@ const publicMint = async (address) => {
 		let amountToMint = 1;
 		let stringMetadata = ["","","","","","","","",""];
 		// hatching duration for now is 300, will be longer later.
-		let numericMetadata = [300,"","","","","","","","",""];
+		let numericMetadata = [300,0,0,0,0,0,0,0,0,0];
 		let boolMetadata = [true];
 
 		let unsignedTx = await genesisContract.populateTransaction.publicMint(owner, amountToMint, stringMetadata, numericMetadata, boolMetadata);
 		let response = signer.sendTransaction(unsignedTx);
-		await response.wait();
+		(await response).wait;
 
-		//Turns response to string, and turn it back to JSON
-		//This is done because for some reason response is a ParseObject and not a JSON
-		const jsonResponse = JSON.parse(JSON.stringify(response));
-		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
-		//Parseplatform is used by Moralis' DB
+		// //Turns response to string, and turn it back to JSON
+		// //This is done because for some reason response is a ParseObject and not a JSON
+		// const jsonResponse = JSON.parse(JSON.stringify(response));
+		// //Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
+		// //Parseplatform is used by Moralis' DB
 
-		//Upon successful minting
-		await addToActivities(
-			jsonResponse.hash,
-			"genesisMinting",
-			"eth",
-			process.env.MINTING_PRICE
-		);
+		// //Upon successful minting
+		// await addToActivities(
+		// 	jsonResponse.hash,
+		// 	"genesisMinting",
+		// 	"eth",
+		// 	process.env.MINTING_PRICE
+		// );
 
-		const currentCount = await genesisContract.currentGenesisNBMonCount();
+		const currentCount = await genesisContract._currentIndex();
 		// just to be extra safe
-		const mintedId = parseInt(currentCount) - 1;
+		const mintedId = parseInt(currentCount);
 		if (!mintedId || mintedId === undefined || isNaN(mintedId)) {
 			throw new Error("minted ID is undefined");
 		}
+
 		//add metadata of the egg to Spaces
-		uploadGenesisEggMetadata(mintedId, hatchingDuration);
+		uploadGenesisEggMetadata(mintedId, numericMetadata[0]);
 
 		return { nbmonId: mintedId };
 	} catch (err) {
