@@ -6,7 +6,6 @@ const path = require("path");
 const genesisStatRandomizer = require("../calculations/genesisStatRandomizer");
 const { saveHatchingKey } = require("../logic/activitiesLogic");
 const { getGenesisNBMonTypes } = require("./genesisNBMonLogic");
-const { providers } = require("moralis/node_modules/ethers");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
