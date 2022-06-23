@@ -4,7 +4,9 @@ const moralisAPINode = process.env.MORALIS_APINODE;
 // address for receiving payment from user
 const receiverWallet = process.env.RECEIVER_WALLET;
 const publicMintingPrice = parseFloat(process.env.MINTING_PRICE);
-const whitelistedMintingPrice = parseFloat(process.env.WHITELISTED_MINTING_PRICE);
+const whitelistedMintingPrice = parseFloat(
+	process.env.WHITELISTED_MINTING_PRICE
+);
 // rinkeby URL connected with Moralis
 const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
@@ -12,12 +14,15 @@ const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 const paymentReceived = async (req, res, next) => {
 	try {
 		const { purchaseType, txHash, purchaserAddress, txGasFee } = req.body;
-		
+
+		let floatGasFee = parseFloat(txGasFee);
+
 		let txReceipt = await customHttpProvider.getTransaction(txHash);
 		if (txReceipt && txReceipt.blockNumber) {
 			if (purchaseType === "whitelisted") {
 				if (
-					parseFloat(ethers.utils.formatEther(txReceipt.value)) === (whitelistedMintingPrice + txGasFee) &&
+					parseFloat(ethers.utils.formatEther(txReceipt.value)) ===
+						whitelistedMintingPrice + floatGasFee &&
 					txReceipt.to === receiverWallet &&
 					txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 				) {
@@ -29,8 +34,22 @@ const paymentReceived = async (req, res, next) => {
 					});
 				}
 			} else if (purchaseType === "public") {
+				console.log(
+					"total (txR)",
+					parseFloat(ethers.utils.formatEther(txReceipt.value))
+				);
+				console.log("publicMintingPrice", publicMintingPrice);
+				console.log("txGasFee", floatGasFee);
+
+				console.log("receiverWallet", receiverWallet);
+				console.log("to (txR)", receiverWallet);
+
+				console.log("from (txR)", txReceipt.from.toLowerCase());
+				console.log("purchaserAddress (FE)", purchaserAddress);
+
 				if (
-					parseFloat(ethers.utils.formatEther(txReceipt.value)) === (publicMintingPrice + txGasFee) &&
+					parseFloat(ethers.utils.formatEther(txReceipt.value)) ===
+						publicMintingPrice + parseFloat(floatGasFee) &&
 					txReceipt.to === receiverWallet &&
 					txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 				) {
@@ -38,17 +57,17 @@ const paymentReceived = async (req, res, next) => {
 				} else {
 					res.status(403).json({
 						errorMessage:
-							"User did not pay whitelisted minting price or to or from address is wrong. Please check again.",
+							"User did not pay public minting price or to or from address is wrong. Please check again.",
 					});
 				}
 			}
 		} else {
-				// will not reach here anyway since if the transaction hash is invalid, it will directly catch an error.
-				// this code is only for safety measures.
-				res.status(403).json({
-					errorMessage:
-						"Transaction hash provided is either invalid or not minted yet. Please check again later.",
-				});
+			// will not reach here anyway since if the transaction hash is invalid, it will directly catch an error.
+			// this code is only for safety measures.
+			res.status(403).json({
+				errorMessage:
+					"Transaction hash provided is either invalid or not minted yet. Please check again later.",
+			});
 		}
 	} catch (err) {
 		res.status(403).json({
