@@ -18,11 +18,15 @@ const paymentReceived = async (req, res, next) => {
 		let floatGasFee = parseFloat(txGasFee);
 
 		let txReceipt = await customHttpProvider.getTransaction(txHash);
+
 		if (txReceipt && txReceipt.blockNumber) {
 			if (purchaseType === "whitelisted") {
+				let txValue = parseFloat(ethers.utils.formatEther(txReceipt.value));
+				let totalFee = parseFloat(
+					(whitelistedMintingPrice + txGasFee).toFixed(3)
+				);
 				if (
-					parseFloat(ethers.utils.formatEther(txReceipt.value)) ===
-						whitelistedMintingPrice + floatGasFee &&
+					txValue === totalFee &&
 					txReceipt.to === receiverWallet &&
 					txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 				) {
@@ -34,22 +38,10 @@ const paymentReceived = async (req, res, next) => {
 					});
 				}
 			} else if (purchaseType === "public") {
-				console.log(
-					"total (txR)",
-					parseFloat(ethers.utils.formatEther(txReceipt.value))
-				);
-				console.log("publicMintingPrice", publicMintingPrice);
-				console.log("txGasFee", floatGasFee);
-
-				console.log("receiverWallet", receiverWallet);
-				console.log("to (txR)", receiverWallet);
-
-				console.log("from (txR)", txReceipt.from.toLowerCase());
-				console.log("purchaserAddress (FE)", purchaserAddress);
-
+				let txValue = parseFloat(ethers.utils.formatEther(txReceipt.value));
+				let totalFee = parseFloat((publicMintingPrice + txGasFee).toFixed(3));
 				if (
-					parseFloat(ethers.utils.formatEther(txReceipt.value)) ===
-						publicMintingPrice + parseFloat(floatGasFee) &&
+					txValue === totalFee &&
 					txReceipt.to === receiverWallet &&
 					txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 				) {
