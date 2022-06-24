@@ -19,14 +19,16 @@ router.post("/hatch", async (req, res) => {
 			process.env.ADMIN_ADDRESS,
 			bornAt
 		).catch((err) => {
-			throw new Error(err);
+			console.log("error at signature");
+            throw new Error(err);
 		});
 
-		// const rand = await randomizeHatchingStats(nbmonId, txSalt, signature).catch(
-		// 	(err) => {
-		// 		throw new Error(err);
-		// 	}
-		// );
+		const rand = await randomizeHatchingStats(nbmonId, txSalt, signature).catch(
+			(err) => {
+                console.log("error at rand");
+				throw new Error(err);
+			}
+		);
 
 		res.json({
 			signature,
