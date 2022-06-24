@@ -1,6 +1,5 @@
 const crypto = require("crypto");
 const ethers = require("ethers");
-ethers;
 const fs = require("fs");
 const path = require("path");
 
