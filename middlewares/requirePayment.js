@@ -15,16 +15,15 @@ const paymentReceived = async (req, res, next) => {
 	try {
 		const { purchaseType, txHash, purchaserAddress, txGasFee } = req.body;
 
-		let floatGasFee = parseFloat(txGasFee);
-
-		let txReceipt = await customHttpProvider.getTransaction(txHash);
+		const txReceipt = await customHttpProvider.getTransaction(txHash);
+		const txValue = parseFloat(ethers.utils.formatEther(txReceipt.value));
+		const floatGasFee = parseFloat(txGasFee);
+		const totalFee = parseFloat(
+			parseFloat(publicMintingPrice + floatGasFee).toFixed(5)
+		);
 
 		if (txReceipt && txReceipt.blockNumber) {
 			if (purchaseType === "whitelisted") {
-				let txValue = parseFloat(ethers.utils.formatEther(txReceipt.value));
-				let totalFee = parseFloat(
-					(whitelistedMintingPrice + txGasFee).toFixed(3)
-				);
 				if (
 					txValue === totalFee &&
 					txReceipt.to === receiverWallet &&
@@ -38,13 +37,12 @@ const paymentReceived = async (req, res, next) => {
 					});
 				}
 			} else if (purchaseType === "public") {
-				let txValue = parseFloat(ethers.utils.formatEther(txReceipt.value));
-				let totalFee = parseFloat((publicMintingPrice + txGasFee).toFixed(3));
 				if (
 					txValue === totalFee &&
 					txReceipt.to === receiverWallet &&
 					txReceipt.from.toLowerCase() === purchaserAddress.toLowerCase()
 				) {
+					console.log("succesful, now minting");
 					next();
 				} else {
 					res.status(403).json({

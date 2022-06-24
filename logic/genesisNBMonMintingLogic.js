@@ -27,26 +27,34 @@ const whitelistedMint = async (address) => {
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
 		let owner = address;
 		let amountToMint = 1;
-		let stringMetadata = ["","","","","","","","",""];
+		let stringMetadata = ["", "", "", "", "", "", "", "", ""];
 		// hatching duration for now is 300, will be longer later.
-		let numericMetadata = [300,0,0,0,0,0,0,0,0,0];
+		let numericMetadata = [300, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		let boolMetadata = [true];
 
-		let unsignedTx = await genesisContract.populateTransaction.whitelistedMint(owner, amountToMint, stringMetadata, numericMetadata, boolMetadata);
+		let unsignedTx = await genesisContract.populateTransaction.whitelistedMint(
+			owner,
+			amountToMint,
+			stringMetadata,
+			numericMetadata,
+			boolMetadata
+		);
 		let response = signer.sendTransaction(unsignedTx);
 		(await response).wait();
 
+		console.log("Minting whitelist...");
+
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
-		const jsonResponse = JSON.parse(JSON.stringify(response));
+		// const jsonResponse = JSON.parse(JSON.stringify(response));
 
-		//Upon successful minting
-		await addToActivities(
-			jsonResponse.hash,
-			"genesisMinting",
-			"eth",
-			process.env.MINTING_PRICE
-		);
+		// //Upon successful minting
+		// await addToActivities(
+		// 	jsonResponse.hash,
+		// 	"genesisMinting",
+		// 	"eth",
+		// 	process.env.MINTING_PRICE
+		// );
 
 		const currentCount = await genesisContract._currentIndex();
 		// just to be extra safe
@@ -62,21 +70,29 @@ const whitelistedMint = async (address) => {
 	} catch (err) {
 		throw new Error(err.stack);
 	}
-}
+};
 
 const publicMint = async (address) => {
 	try {
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
 		let owner = address;
 		let amountToMint = 1;
-		let stringMetadata = ["","","","","","","","",""];
+		let stringMetadata = ["", "", "", "", "", "", "", "", ""];
 		// hatching duration for now is 300, will be longer later.
-		let numericMetadata = [300,0,0,0,0,0,0,0,0,0];
+		let numericMetadata = [300, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		let boolMetadata = [true];
 
-		let unsignedTx = await genesisContract.populateTransaction.publicMint(owner, amountToMint, stringMetadata, numericMetadata, boolMetadata);
+		let unsignedTx = await genesisContract.populateTransaction.publicMint(
+			owner,
+			amountToMint,
+			stringMetadata,
+			numericMetadata,
+			boolMetadata
+		);
 		let response = signer.sendTransaction(unsignedTx);
 		(await response).wait;
+
+		console.log("Minting public...");
 
 		// //Turns response to string, and turn it back to JSON
 		// //This is done because for some reason response is a ParseObject and not a JSON
@@ -106,7 +122,7 @@ const publicMint = async (address) => {
 	} catch (err) {
 		throw new Error(err.stack);
 	}
-}
+};
 
 module.exports = {
 	whitelistedMint,

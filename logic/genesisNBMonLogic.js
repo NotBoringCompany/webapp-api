@@ -49,7 +49,7 @@ const getGenesisNBMon = async (id) => {
 
 		/// check if isEgg is true or false to return respective hatching metadata
 		if (nbmon["boolMetadata"][0] === true) {
-			nbmonObj["hatchedAt"] = "Not hatched yet";
+			nbmonObj["hatchedAt"] = null;
 			nbmonObj["isHatchable"] = now >= hatchableTime;
 		} else {
 			nbmonObj["hatchedAt"] = parseInt(Number(nbmon["numericMetadata"][9]));
@@ -109,6 +109,7 @@ const getGenesisNBMon = async (id) => {
 		if (nbmon["boolMetadata"][0] === true) {
 			nbmonObj["mutation"] = "Not mutated";
 			nbmonObj["mutationType"] = null;
+			nbmonObj["behavior"] = null;
 			// if already hatched
 		} else {
 			nbmonObj["mutation"] =
@@ -117,6 +118,7 @@ const getGenesisNBMon = async (id) => {
 					: "Mutated";
 			nbmonObj["mutationType"] =
 				nbmonObj["mutation"] === "Mutated" ? nbmon["stringMetadata"][2] : null;
+			nbmonObj["behavior"] = await getGenesisBehavior(nbmonObj["genus"]);
 		}
 
 		nbmonObj["species"] =
@@ -130,7 +132,6 @@ const getGenesisNBMon = async (id) => {
 		nbmonObj["genusDescription"] = await getGenesisGenusDescription(
 			nbmonObj["genus"]
 		);
-		nbmonObj["bevahior"] = await getGenesisBehavior(nbmonObj["genus"]);
 
 		// fertility calculation
 		nbmonObj["fertility"] =
