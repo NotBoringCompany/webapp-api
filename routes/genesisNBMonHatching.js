@@ -14,25 +14,23 @@ router.post("/hatch", async (req, res) => {
 	try {
 		const bornAt = await getNBMonBornAt(nbmonId);
 
+		//Generates Signature and TxSalt
 		const { signature, txSalt } = await generateSignature(
 			nbmonId,
 			process.env.ADMIN_ADDRESS,
 			bornAt
 		).catch((err) => {
-			console.log("error at signature");
-            throw new Error(err);
+			throw new Error(err);
 		});
 
-		const rand = await randomizeHatchingStats(nbmonId, txSalt, signature).catch(
-			(err) => {
-                console.log("error at rand");
-				throw new Error(err);
-			}
-		);
+		//Randomises stats and send it to the blockchain as a
+		//key-value pair where key is the signature, and value is the stats.
+		await randomizeHatchingStats(nbmonId, txSalt, signature).catch((err) => {
+			throw new Error(err);
+		});
 
 		res.json({
 			signature,
-			txSalt,
 		});
 	} catch (e) {
 		res.json({ e: e.toString() });
