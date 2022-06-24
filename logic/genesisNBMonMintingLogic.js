@@ -39,22 +39,22 @@ const whitelistedMint = async (address) => {
 			numericMetadata,
 			boolMetadata
 		);
-		let response = signer.sendTransaction(unsignedTx);
-		(await response).wait();
+		let response = await signer.sendTransaction(unsignedTx);
+		await response.wait();
 
 		console.log("Minting whitelist...");
 
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
-		// const jsonResponse = JSON.parse(JSON.stringify(response));
+		const jsonResponse = JSON.parse(JSON.stringify(response));
 
-		// //Upon successful minting
-		// await addToActivities(
-		// 	jsonResponse.hash,
-		// 	"genesisMinting",
-		// 	"eth",
-		// 	process.env.MINTING_PRICE
-		// );
+		//Upon successful minting
+		await addToActivities(
+			jsonResponse.hash,
+			"genesisMinting",
+			"eth",
+			process.env.MINTING_PRICE
+		);
 
 		const currentCount = await genesisContract._currentIndex();
 		// just to be extra safe
@@ -89,28 +89,26 @@ const publicMint = async (address) => {
 			numericMetadata,
 			boolMetadata
 		);
-		let response = signer.sendTransaction(unsignedTx);
-		(await response).wait;
+		let response = await signer.sendTransaction(unsignedTx);
+		await response.wait();
+		console.log("response", response);
 
-		console.log("Minting public...");
-
-		// //Turns response to string, and turn it back to JSON
-		// //This is done because for some reason response is a ParseObject and not a JSON
-		// const jsonResponse = JSON.parse(JSON.stringify(response));
-		// //Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
-		// //Parseplatform is used by Moralis' DB
-
-		// //Upon successful minting
-		// await addToActivities(
-		// 	jsonResponse.hash,
-		// 	"genesisMinting",
-		// 	"eth",
-		// 	process.env.MINTING_PRICE
-		// );
+		//Turns response to string, and turn it back to JSON
+		//This is done because for some reason response is a ParseObject and not a JSON
+		const jsonResponse = JSON.parse(JSON.stringify(response));
+		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
+		//Parseplatform is used by Moralis' DB
+		//Upon successful minting
+		await addToActivities(
+			jsonResponse.hash,
+			"genesisMinting",
+			"eth",
+			process.env.MINTING_PRICE
+		);
 
 		const currentCount = await genesisContract._currentIndex();
 		// just to be extra safe
-		const mintedId = parseInt(currentCount);
+		const mintedId = parseInt(currentCount) - 1;
 		if (!mintedId || mintedId === undefined || isNaN(mintedId)) {
 			throw new Error("minted ID is undefined");
 		}
