@@ -110,6 +110,7 @@ const getGenesisNBMon = async (id) => {
 			nbmonObj["mutation"] = "Not mutated";
 			nbmonObj["mutationType"] = null;
 			nbmonObj["behavior"] = null;
+
 			// if already hatched
 		} else {
 			nbmonObj["mutation"] =

@@ -1,12 +1,11 @@
-const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 const ethers = require("ethers");
+ethers;
 const fs = require("fs");
 const path = require("path");
 
 const genesisStatRandomizer = require("../calculations/genesisStatRandomizer");
-const { saveHatchingKey } = require("../logic/activitiesLogic");
 const { getGenesisNBMonTypes } = require("./genesisNBMonLogic");
-const { providers } = require("moralis/node_modules/ethers");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
@@ -22,6 +21,25 @@ const genesisContract = new ethers.Contract(
 	genesisABI,
 	customHttpProvider
 );
+const adminWallet = new ethers.Wallet(pvtKey);
+
+const generateSignature = async (nbmonId, minter, bornAt) => {
+	const txSalt = crypto.randomBytes(52).toString("hex");
+
+	const hash = await genesisContract.hatchingHash(
+		nbmonId,
+		minter,
+		bornAt,
+		txSalt
+	);
+
+	//We need to 'arrayify' the hash
+	//Refer to: https://docs.ethers.io/v4/cookbook-signing.html#signing-a-digest-hash
+	const messageHashBytes = ethers.utils.arrayify(hash);
+	const signature = await adminWallet.signMessage(messageHashBytes);
+
+	return { signature, txSalt };
+};
 
 const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 	try {
@@ -89,8 +107,7 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 		const boolMetadata = [false];
 
 		//get bornAt to match sig
-		const nbmon = await genesisContract.getNFT(nbmonId);
-		const bornAt = parseInt(Number(nbmon["bornAt"]));
+		const bornAt = await getNBMonBornAt(nbmonId);
 		let unsignedTx = await genesisContract.populateTransaction.addHatchingStats(
 			nbmonId,
 			signer.address,
@@ -103,16 +120,22 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 		);
 		let response = await signer.sendTransaction(unsignedTx);
 		let minedResponse = await response.wait();
-
 		return {
 			response: minedResponse,
-			signature: signature,
+			signature,
 		};
 	} catch (err) {
 		throw new Error(err.stack);
 	}
 };
 
+const getNBMonBornAt = async (nbmonId) => {
+	const nbmon = await genesisContract.getNFT(nbmonId);
+	return parseInt(Number(nbmon["bornAt"]));
+};
+
 module.exports = {
 	randomizeHatchingStats,
+	generateSignature,
+	getNBMonBornAt,
 };
