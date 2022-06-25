@@ -7,9 +7,10 @@ const {
 const {
 	uploadGenesisHatchedMetadata,
 } = require("../logic/genesisMetadataLogic");
+const { paymentReceived } = require("../middlewares/requirePayment");
 const router = express.Router();
 
-router.post("/hatch", async (req, res) => {
+router.post("/hatch", paymentReceived, paymentReceived, async (req, res) => {
 	const { nbmonId } = req.body;
 	try {
 		const bornAt = await getNBMonBornAt(nbmonId);
@@ -35,14 +36,6 @@ router.post("/hatch", async (req, res) => {
 	} catch (e) {
 		res.json({ e: e.toString() });
 	}
-});
-
-//TODO: DELETE THIS ROUTE LATER :)
-router.post("/randomizeHatchingStats", async (req, res) => {
-	let randomizeStats = await randomizeHatchingStats().catch((err) =>
-		res.json(err)
-	);
-	res.json(randomizeStats);
 });
 
 router.post("/uploadHatchedMetadata", async (req, res) => {
