@@ -6,6 +6,8 @@ const path = require("path");
 const genesisStatRandomizer = require("../calculations/genesisStatRandomizer");
 const { getGenesisNBMonTypes } = require("./genesisNBMonLogic");
 
+const { saveHatchingSignature } = require("./activitiesLogic");
+
 const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
 // rinkeby URL connected with Moralis
@@ -53,7 +55,7 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 		const fertility = 3000;
 
 		const types = await getGenesisNBMonTypes(genus);
-		var [typeOne, typeTwo ] = [types[0], types[1]];
+		var [typeOne, typeTwo] = [types[0], types[1]];
 		const potential = await genesisStatRandomizer.randomizeGenesisPotential(
 			rarity
 		);
@@ -66,18 +68,17 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 			spAtkPotential,
 			spDefPotential,
 			speedPotential,
-		] =
-		[
+		] = [
 			potential[0],
 			potential[1],
 			potential[2],
 			potential[3],
 			potential[4],
 			potential[5],
-			potential[6]
+			potential[6],
 		];
 		const passives = await genesisStatRandomizer.randomizeGenesisPassives();
-		var [passiveOne, passiveTwo ] = [passives[0], passives[1]];
+		var [passiveOne, passiveTwo] = [passives[0], passives[1]];
 		const blockNumber = await customHttpProvider.getBlockNumber();
 		const hatchedTimestamp = (await customHttpProvider.getBlock(blockNumber))
 			.timestamp;
@@ -123,6 +124,8 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 
 		let response = await signer.sendTransaction(unsignedTx);
 		let minedResponse = await response.wait();
+
+		saveHatchingSignature(signature);
 
 		return {
 			response: minedResponse,
