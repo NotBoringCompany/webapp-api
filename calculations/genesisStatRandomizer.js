@@ -22,27 +22,27 @@ const randomizeGenesisRarity = async () => {
         let rarityRand = Math.floor(Math.random() * 1000) + 1;
 
         switch (true) {
-            // 35% chance to get common
-            case (rarityRand <= 350):
+            // 50% chance to get common
+            case (rarityRand <= 500):
                 return "Common";
             // 25% chance to get uncommon
-            case (rarityRand <= 600):
+            case (rarityRand <= 750):
                 return "Uncommon";
-            // 17.5% chance to get rare
-            case (rarityRand <= 775):
+            // 12.5% chance to get rare
+            case (rarityRand <= 875):
                 return "Rare";
-            // 12.5% chance to get epic
-            case (rarityRand <= 900):
+            // 7% chance to get epic
+            case (rarityRand <= 945):
                 return "Epic";
-            // 6.5% chance to get legendary
-            case (rarityRand <= 965):
+            // 4% chance to get legendary
+            case (rarityRand <= 985):
                 return "Legendary";
-            // 3.5% chance to get mythical
+            // 1.5% chance to get mythical
             case (rarityRand <= 1000):
                 return "Mythical";
         }
     } catch (err) {
-        return err;
+        throw new Error(err.stack);
     }
 }
 
@@ -68,7 +68,7 @@ const randomizeGenesisGenus = async () => {
     
         return availableGenera[genusRand];
     } catch (err) {
-        return err;
+        throw new Error(err.stack);
     }   
 }
 

@@ -1,10 +1,9 @@
-const { v4: uuidv4 } = require("uuid");
+const crypto = require("crypto");
 const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
 
 const genesisStatRandomizer = require("../calculations/genesisStatRandomizer");
-const { saveHatchingKey } = require("../logic/activitiesLogic");
 const { getGenesisNBMonTypes } = require("./genesisNBMonLogic");
 
 const moralisAPINode = process.env.MORALIS_APINODE;
@@ -21,46 +20,126 @@ const genesisContract = new ethers.Contract(
 	genesisABI,
 	customHttpProvider
 );
+const adminWallet = new ethers.Wallet(pvtKey);
 
-// hatches the nbmon from an egg and gives it its respective stats
-const randomizeHatchingStats = async () => {
+const generateSignature = async (nbmonId, minter, bornAt) => {
+	const txSalt = crypto.randomBytes(52).toString("hex");
+
+	const hash = await genesisContract.hatchingHash(
+		nbmonId,
+		minter,
+		bornAt,
+		txSalt
+	);
+
+	//We need to 'arrayify' the hash
+	//Refer to: https://docs.ethers.io/v4/cookbook-signing.html#signing-a-digest-hash
+	const messageHashBytes = ethers.utils.arrayify(hash);
+	const signature = await adminWallet.signMessage(messageHashBytes);
+
+	return { signature, txSalt };
+};
+
+const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 	try {
-		const key = uuidv4();
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
-		const gender = (await genesisStatRandomizer.randomizeGenesisGender()).toString();
-		const rarity = (await genesisStatRandomizer.randomizeGenesisRarity()).toString();
-		const genus = (await genesisStatRandomizer.randomizeGenesisGenus()).toString();
-		const mutation = (await genesisStatRandomizer.randomizeGenesisMutation(genus)).toString();
+		const gender = await genesisStatRandomizer.randomizeGenesisGender();
+		const rarity = await genesisStatRandomizer.randomizeGenesisRarity();
+		const genus = await genesisStatRandomizer.randomizeGenesisGenus();
+		const mutation = await genesisStatRandomizer.randomizeGenesisMutation(
+			genus
+		);
 		const species = "Origin";
-		const fertility = "3000";
-		const nbmonStats = [gender, rarity, mutation, species, genus, fertility];
+		const fertility = 3000;
 
 		const types = await getGenesisNBMonTypes(genus);
-		const potential = await genesisStatRandomizer.randomizeGenesisPotential(rarity);
-		const passives = await genesisStatRandomizer.randomizeGenesisPassives();
-
-		let unsignedTx = await genesisContract.populateTransaction.addValidKey(
-			key,
-			nbmonStats,
-			types,
-			potential,
-			passives
+		var [typeOne, typeTwo ] = [types[0], types[1]];
+		const potential = await genesisStatRandomizer.randomizeGenesisPotential(
+			rarity
 		);
+
+		var [
+			healthPotential,
+			energyPotential,
+			atkPotential,
+			defPotential,
+			spAtkPotential,
+			spDefPotential,
+			speedPotential,
+		] =
+		[
+			potential[0],
+			potential[1],
+			potential[2],
+			potential[3],
+			potential[4],
+			potential[5],
+			potential[6]
+		];
+		const passives = await genesisStatRandomizer.randomizeGenesisPassives();
+		var [passiveOne, passiveTwo ] = [passives[0], passives[1]];
+		const blockNumber = await customHttpProvider.getBlockNumber();
+		const hatchedTimestamp = (await customHttpProvider.getBlock(blockNumber))
+			.timestamp;
+
+		//pack all of the calculated data into the metadata arrays
+		const stringMetadata = [
+			gender,
+			rarity,
+			mutation,
+			species,
+			genus,
+			typeOne,
+			typeTwo,
+			passiveOne,
+			passiveTwo,
+		];
+		const numericMetadata = [
+			0,
+			healthPotential,
+			energyPotential,
+			atkPotential,
+			defPotential,
+			spAtkPotential,
+			spDefPotential,
+			speedPotential,
+			fertility,
+			hatchedTimestamp,
+		];
+		const boolMetadata = [false];
+
+		//get bornAt to match sig
+		const bornAt = await getNBMonBornAt(nbmonId);
+		let unsignedTx = await genesisContract.populateTransaction.addHatchingStats(
+			nbmonId,
+			signer.address,
+			bornAt,
+			txSalt,
+			signature,
+			stringMetadata,
+			numericMetadata,
+			boolMetadata
+		);
+
 		let response = await signer.sendTransaction(unsignedTx);
 		let minedResponse = await response.wait();
 
-		//Upon successful minting
-		await saveHatchingKey(key);
-
 		return {
 			response: minedResponse,
-			key: key,
+			signature,
 		};
 	} catch (err) {
-		return err;
+		throw new Error(err.stack);
 	}
+};
+
+const getNBMonBornAt = async (nbmonId) => {
+	const nbmon = await genesisContract.getNFT(nbmonId);
+	return parseInt(Number(nbmon["bornAt"]));
 };
 
 module.exports = {
 	randomizeHatchingStats,
+	generateSignature,
+	getNBMonBornAt,
 };
