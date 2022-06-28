@@ -20,12 +20,30 @@ const crypto = require("crypto");
  * @param {paymentToken} The contract address of the payment token the seller chose for listing the item.
  * @param {signature} The signature of the seller. Please use `listingHash` to obtain the signature.
  */
-const listItem = async (nftContract, tokenId, paymentToken, seller, price, txSalt, signature) => {
+const listItem = async (
+    nftContract, 
+    tokenId, 
+    paymentToken, 
+    saleType, 
+    seller, 
+    price, 
+    startingPrice, 
+    endingPrice, 
+    minimumReserveBid, 
+    duration, 
+    txSalt, 
+    signature
+    ) => {
 
     const ItemsOnSale = Moralis.Object.extend("ItemsOnSale");
     const itemsOnSale = new ItemsOnSale();
 
     itemsOnSale.set("NFT_Contract", nftContract);
+    itemsOnSale.set("Sale_Type", saleType);
+    itemsOnSale.set("Starting_Price", startingPrice);
+    itemsOnSale.set("Minimum_Reserve_Bid", minimumReserveBid);
+    itemsOnSale.set("Duration", duration);
+    itemsOnSale.set("Ending_Price", endingPrice);
     itemsOnSale.set("Token_ID", tokenId);
     itemsOnSale.set("Payment_Token", paymentToken);
     itemsOnSale.set("Seller", seller);
