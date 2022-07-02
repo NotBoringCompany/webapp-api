@@ -215,7 +215,7 @@ const checkHatchingSignatureValid = async (hash) => {
  * This is to make sure that no same activity can be added twice
  */
 const invalidateHatchingSignature = async (signature) => {
-	const hatchingSignatures = Moralis.Object.extend("HatchingSignature");
+	const hatchingSignatures = Moralis.Object.extend("HatchingSignatures");
 	const hatchingSignatureQuery = new Moralis.Query(hatchingSignatures);
 
 	hatchingSignatureQuery.equalTo("signature", signature);
