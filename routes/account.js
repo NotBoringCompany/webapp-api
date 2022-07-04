@@ -5,6 +5,7 @@ const {
 	sendPasswordResetRequest,
 	checkIfTokenValid,
 	resetPassword,
+	userLogin
 } = require("../logic/acccountLogic");
 
 router.post("/send-reset-password-request", async (req, res) => {
@@ -37,6 +38,16 @@ router.post("/reset-password", async (req, res) => {
 	} catch (error) {
 		res.status(400).json({ error });
 	}
+});
+
+router.post("/login/", async (req, res) => {
+    const { login, password } = req.body;
+    try{
+        let result = await userLogin(login, password);
+        res.json(result);
+    } catch (error) {
+        res.status(400).json({ status: "error", message: error });
+    }
 });
 
 module.exports = router;

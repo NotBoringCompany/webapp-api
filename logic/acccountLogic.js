@@ -167,6 +167,19 @@ const getUser = async (email) => {
 	return null;
 };
 
+const userLogin = async (login, password) => {
+    try {
+
+        const user = await Moralis.User.logIn(login, password);
+
+        return { status: "ok", message: user.get("sessionToken") }
+
+
+    } catch (err) {
+        throw err.message;
+    }
+};
+
 /**
  * @dev Deletes a record/row in the ForgotPasswordRequests class by its tokenId.
  */
@@ -183,4 +196,4 @@ const deleteRequest = async (tokenId) => {
 	if (object) object.destroy({ useMasterKey: true });
 };
 
-module.exports = { sendPasswordResetRequest, resetPassword, checkIfTokenValid };
+module.exports = { sendPasswordResetRequest, resetPassword, checkIfTokenValid, userLogin };
