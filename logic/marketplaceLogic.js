@@ -11,14 +11,15 @@ const crypto = require("crypto");
     const serverUrl = process.env.MORALIS_SERVERURL;
     const appId = process.env.MORALIS_APPID;
     const masterKey = process.env.MORALIS_MASTERKEY;
-    await Moralis.start({ serverUrl, appId, masterKey });
 // ----------------------------------------------------------------
 
 /**
- * @dev Lists item up for sale.
- * @param {nftContract} The contract address of the NFT being listed on sale.
- * @param {paymentToken} The contract address of the payment token the seller chose for listing the item.
- * @param {signature} The signature of the seller. Please use `listingHash` to obtain the signature.
+ * @dev Helper function to parse object data into a JSON string
+ */
+ const parseJSON = (data) => JSON.parse(JSON.stringify(data));
+
+/**
+ * Lists item up for sale.
  */
 const listItem = async (
     nftContract, 
@@ -60,57 +61,53 @@ const listItem = async (
     );
 }
 
-// gets all items currently on sale
-// const getItemsOnSale = async () => {
-//     try {
-//         const query = new Moralis.Query("ItemsOnSale");
-//         const queryPipeline = [
-//             { match: {} },
-//             { project: {
-//                 _id: 0,
-//                 NFT_Contract: 1,
-//                 Token_ID: 1,
-//                 Payment_Token: 1,
-//                 Seller: 1,
-//                 Price: 1,
-//                 TX_Salt: 1,
-//                 Signature: 1
-//             } }
-//         ];
+// gets a 256-byte salt, used inside listingHash when listing an item on sale.
+const generateTxSalt = () => {
+    return crypto.randomBytes(256).toString('hex');
+}
 
-//         const queryPipelineAggRes = await query.aggregate(queryPipeline);
-//         return queryPipelineAggRes;
-//     } catch (err) {
-//         throw new Error(err.stack);
-//     }
-// }
+//gets all items currently on sale
+const getItemsOnSale = async () => {
+    try {
+        const ItemsOnSale = Moralis.Object.extend("ItemsOnSale");
+        const query = new Moralis.Query(ItemsOnSale);
+        const queryResult = await query.find({ useMasterKey: true });
 
-// // gets a 256-byte salt, used inside listingHash when listing an item on sale.
-// const generateTxSalt = () => {
-//     return crypto.randomBytes(256).toString('hex');
-// }
+        const parsedResult = parseJSON(queryResult);
+
+        return parsedResult;
+    } catch (err) {
+        throw new Error(err.stack);
+    }
+}
 
 
-// // deletes an item after being sold or cancelled.
-// const deleteItemOnSale = async (tokenId) => {
-//     try {
-//         const itemsQuery = new Moralis.Query("ItemsOnSale");
-//         itemsQuery.equalTo("Token_ID", tokenId);
-//         const item = await itemsQuery.first({ useMasterKey: true });
 
-//         if (item) {
-//             item.destroy({ useMasterKey: true }).then(() => {
-//                 return `ID ${tokenId} deleted from ItemsOnSale`;
-//             }), (err) => {
-//                 throw new Error(err.stack);
-//             }
-//         }
-//     } catch (err) {
-//         throw new Error(err.stack);
-//     }
-// }
+// deletes an item after being sold or cancelled.
+const deleteItemOnSale = async (tokenId) => {
+    try {
+        const itemsQuery = new Moralis.Query("ItemsOnSale");
+        itemsQuery.equalTo("Token_ID", tokenId);
+        const item = await itemsQuery.first({ useMasterKey: true });
+
+        if (item) {
+            item.destroy({ useMasterKey: true }).then(() => {
+                return `ID ${tokenId} deleted from ItemsOnSale`;
+            }), (err) => {
+                throw new Error(err.stack);
+            }
+        }
+    } catch (err) {
+        throw new Error(err.stack);
+    }
+}
+
+deleteItemOnSale(2);
 
 
 module.exports = {
-    listItem
+    listItem,
+    getItemsOnSale,
+    generateTxSalt,
+    deleteItemOnSale
 };
