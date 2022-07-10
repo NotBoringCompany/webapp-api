@@ -34,7 +34,7 @@ const listItem = async (
     startingPrice, 
     endingPrice, 
     minimumReserveBid, 
-    duration, 
+    endTime, 
     txSalt, 
     signature
     ) => {
@@ -46,7 +46,11 @@ const listItem = async (
     itemsOnSale.set("Sale_Type", saleType);
     itemsOnSale.set("Starting_Price", startingPrice);
     itemsOnSale.set("Minimum_Reserve_Bid", minimumReserveBid);
+
+    //calculating duration
+    const duration = endTime - moment.unix();
     itemsOnSale.set("Duration", duration);
+    
     itemsOnSale.set("Ending_Price", endingPrice);
     itemsOnSale.set("Token_ID", tokenId);
     itemsOnSale.set("Payment_Token", paymentToken);
@@ -140,7 +144,6 @@ const deleteItemOnSale = async (tokenId) => {
         throw new Error(err.stack);
     }
 }
-
 
 module.exports = {
     listItem,
