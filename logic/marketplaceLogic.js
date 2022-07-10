@@ -50,7 +50,7 @@ const listItem = async (
     //calculating duration
     const duration = endTime - moment.unix();
     itemsOnSale.set("Duration", duration);
-    
+
     itemsOnSale.set("Ending_Price", endingPrice);
     itemsOnSale.set("Token_ID", tokenId);
     itemsOnSale.set("Payment_Token", paymentToken);
@@ -110,7 +110,7 @@ const getItemOnSale = async (tokenId) => {
 
         const parsedResult = parseJSON(queryResult);
 
-        const resultObject = [];
+        let resultObject = [];
         // if nft contract is the nbmon contract, we then fetch the nbmon stats of the nbmon on sale
         if (parsedResult[0]["NFT_Contract"] === nbmonContract) {
             parsedResult[0]["NBMon Data"] = await getGenesisNBMon(parsedResult[0]["Token_ID"]);
@@ -119,7 +119,7 @@ const getItemOnSale = async (tokenId) => {
             resultObject[`NFT ID ${parsedResult[0]["Token_ID"]}`] = parsedResult[0];
         }
         
-        console.log(resultObject);
+        return resultObject;
 
     } catch (err) {
         throw new Error(err.stack);

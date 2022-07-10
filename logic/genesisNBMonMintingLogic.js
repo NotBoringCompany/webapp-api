@@ -63,8 +63,24 @@ const whitelistedMint = async (address) => {
 			throw new Error("minted ID is undefined");
 		}
 
+		// add to "Genesis_NBMons" database
+		const GenesisNBMons = Moralis.Object.extend("Genesis_NBMons");
+		const genesisNBMons = new GenesisNBMons();
+
+		genesisNBMons.set("Token_ID", mintedId);
+		genesisNBMons.set("Owner", owner);
+		genesisNBMons.set("String_Metadata", stringMetadata);
+		genesisNBMons.set("Numeric_Metadata", numericMetadata);
+		genesisNBMons.set("Bool_Metadata", boolMetadata);
+		genesisNBMons.set("Born_At", moment.unix());
+		genesisNBMons.set("Transferred_At", moment.unix());
+
+		genesisNBMons.save(null, {useMasterKey: true}).catch((err) => {
+			throw new Error(err.stack);
+		})
+
 		//add metadata of the egg to Spaces
-		// uploadGenesisEggMetadata(mintedId, hatchingDuration);
+		uploadGenesisEggMetadata(mintedId, numericMetadata[0]);
 
 		return { nbmonId: mintedId };
 	} catch (err) {
@@ -112,6 +128,22 @@ const publicMint = async (address) => {
 		if (!mintedId || mintedId === undefined || isNaN(mintedId)) {
 			throw new Error("minted ID is undefined");
 		}
+
+		// add to "Genesis_NBMons" database
+		const GenesisNBMons = Moralis.Object.extend("Genesis_NBMons");
+		const genesisNBMons = new GenesisNBMons();
+
+		genesisNBMons.set("Token_ID", mintedId);
+		genesisNBMons.set("Owner", owner);
+		genesisNBMons.set("String_Metadata", stringMetadata);
+		genesisNBMons.set("Numeric_Metadata", numericMetadata);
+		genesisNBMons.set("Bool_Metadata", boolMetadata);
+		genesisNBMons.set("Born_At", moment.unix());
+		genesisNBMons.set("Transferred_At", moment.unix());
+
+		genesisNBMons.save(null, {useMasterKey: true}).catch((err) => {
+			throw new Error(err.stack);
+		})
 
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, numericMetadata[0]);
