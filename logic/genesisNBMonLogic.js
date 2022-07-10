@@ -195,8 +195,6 @@ const getGenesisNBMon = async (id) => {
 	}
 };
 
-getGenesisNBMon(1);
-
 // // /**
 // //  * Similar to `getGenesisNBMon`, but gets data from the blockchain instead.
 // //  */
