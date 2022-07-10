@@ -13,6 +13,9 @@ const crypto = require("crypto");
     const masterKey = process.env.MORALIS_MASTERKEY;
 // ----------------------------------------------------------------
 
+const {getGenesisNBMon} = require('./genesisNBMonLogic');
+const nbmonContract = process.env.CONTRACT_ADDRESS;
+
 /**
  * @dev Helper function to parse object data into a JSON string
  */
@@ -75,13 +78,49 @@ const getItemsOnSale = async () => {
 
         const parsedResult = parseJSON(queryResult);
 
-        return parsedResult;
+        let resultObject = [];
+
+        // if nft contract is the nbmon contract, we then fetch the nbmon stats of the nbmon on sale
+        for (let i = 0; i < parsedResult.length; i++) {
+            if (parsedResult[i]["NFT_Contract"] === nbmonContract) {
+                parsedResult[i]["NBMon Data"] = await getGenesisNBMon(parsedResult[i]["Token_ID"]);
+                resultObject[`NBMon ID ${parsedResult[i]["Token_ID"]}`] = parsedResult[i];
+            } else {
+                resultObject[`NFT ID ${parsedResult[i]["Token_ID"]}`] = parsedResult[i];
+            }
+        }
+
+        return resultObject;
     } catch (err) {
         throw new Error(err.stack);
     }
 }
 
+//get a single item on sale
+const getItemOnSale = async (tokenId) => {
+    try {
+        const ItemsOnSale = Moralis.Object.extend("ItemsOnSale");
+        const query = new Moralis.Query(ItemsOnSale);
+        const idQuery = query.equalTo("Token_ID", tokenId);
+        const queryResult = await idQuery.find({ useMasterKey: true });
 
+        const parsedResult = parseJSON(queryResult);
+
+        const resultObject = [];
+        // if nft contract is the nbmon contract, we then fetch the nbmon stats of the nbmon on sale
+        if (parsedResult[0]["NFT_Contract"] === nbmonContract) {
+            parsedResult[0]["NBMon Data"] = await getGenesisNBMon(parsedResult[0]["Token_ID"]);
+            resultObject[`NBMon ID ${parsedResult[0]["Token_ID"]}`] = parsedResult[0];
+        } else {
+            resultObject[`NFT ID ${parsedResult[0]["Token_ID"]}`] = parsedResult[0];
+        }
+        
+        console.log(resultObject);
+
+    } catch (err) {
+        throw new Error(err.stack);
+    }
+}
 
 // deletes an item after being sold or cancelled.
 const deleteItemOnSale = async (tokenId) => {
@@ -102,12 +141,11 @@ const deleteItemOnSale = async (tokenId) => {
     }
 }
 
-deleteItemOnSale(2);
-
 
 module.exports = {
     listItem,
     getItemsOnSale,
     generateTxSalt,
-    deleteItemOnSale
+    deleteItemOnSale,
+    getItemOnSale
 };
