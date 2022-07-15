@@ -38,7 +38,7 @@ router.post("/listItem", async (req, res) => {
     res.json(addItem);
 });
 
-router.get("getItems", async (_, res) => {
+router.get("/getItems", async (_, res) => {
     let items = await getItemsOnSale()
         .catch((err) => res.json(err.message));
 
@@ -52,13 +52,13 @@ router.get("getItem", async (req, res) => {
     res.json(item);
 });
 
-router.post("generateTxSalt", async (_, res) => {
+router.post("/generateTxSalt", async (_, res) => {
     let salt = generateTxSalt();
 
     res.json(salt);
 });
 
-router.post("deleteItem", async (req, res) => {
+router.post("/deleteItem", async (req, res) => {
     const {tokenId} = req.body;
 
     let deleteItem = await deleteItemOnSale(tokenId).catch((err) => res.json(err.message));
