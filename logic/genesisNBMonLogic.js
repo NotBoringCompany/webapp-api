@@ -13,7 +13,6 @@ const {
 	getAttackEffectiveness,
 	getDefenseEffectiveness,
 } = require("../logic/typeEffectivenessLogic");
-const { query } = require("express");
 const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")
 );
@@ -191,7 +190,7 @@ const getGenesisNBMon = async (id) => {
 		return nbmonObj;
 
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err;
 	}
 };
 
