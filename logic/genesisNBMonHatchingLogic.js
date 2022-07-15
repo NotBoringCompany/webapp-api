@@ -136,6 +136,34 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 	}
 };
 
+const updateHatchedNBMon = async (
+	id,
+	stringMetadata,
+	numericMetadata,
+	boolMetadata,
+) => {
+	try {
+		const GenesisNBMons = Moralis.Object.extend("Genesis_NBMons");
+		const genesisNBMons = new GenesisNBMons();
+		const query = genesisNBMons.equalTo("NBMon_ID", id);
+		const result = await query.first({useMasterKey: true});
+
+		result.set("String_Metadata", stringMetadata);
+		result.set("Numeric_Metadata", numericMetadata);
+		result.set("Bool_Metadata", boolMetadata);
+
+		result.save(null, { useMasterKey: true }).catch((err) => {
+			throw new Error(err.stack)
+		});
+
+		return {
+			status: "OK"
+		}
+	} catch (err) {
+		throw new Error(err.stack);
+	}
+}
+
 const getNBMonBornAt = async (nbmonId) => {
 	const nbmon = await genesisContract.getNFT(nbmonId);
 	return parseInt(Number(nbmon["bornAt"]));
@@ -145,4 +173,5 @@ module.exports = {
 	randomizeHatchingStats,
 	generateSignature,
 	getNBMonBornAt,
+	updateHatchedNBMon
 };

@@ -3,6 +3,7 @@ const {
 	randomizeHatchingStats,
 	generateSignature,
 	getNBMonBornAt,
+	updateHatchedNBMon,
 } = require("../logic/genesisNBMonHatchingLogic");
 const {
 	uploadGenesisHatchedMetadata,
@@ -45,5 +46,14 @@ router.post("/uploadHatchedMetadata", async (req, res) => {
 	);
 	res.json(upload);
 });
+
+router.post("/updateHatchedNBMon", async (req, res) => {
+	const {id, stringMetadata, numericMetadata, boolMetadata} = req.body;
+
+	let updateNBMon = await updateHatchedNBMon(id, stringMetadata, numericMetadata, boolMetadata)
+		.catch((err) => res.json(err.message));
+
+	res.json(updateNBMon);
+})
 
 module.exports = router;
