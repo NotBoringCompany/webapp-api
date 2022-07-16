@@ -5,10 +5,9 @@ const path = require("path");
 const { addToActivities } = require("./activitiesLogic");
 const { uploadGenesisEggMetadata } = require("./genesisMetadataLogic");
 
-const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
-// rinkeby URL connected with Moralis
-const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
+
+const nodeURL = "https://rpc-mumbai.maticvigil.com";
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const genesisNBMonABI = fs.readFileSync(

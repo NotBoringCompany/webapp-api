@@ -4,9 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
 
-const moralisAPINode = process.env.MORALIS_APINODE;
-// rinkeby URL connected with Moralis
-const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
+const nodeURL = "https://rpc-mumbai.maticvigil.com";
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const {
