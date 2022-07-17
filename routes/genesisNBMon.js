@@ -7,7 +7,7 @@ const httpErrorStatusCode = require("../utils/httpErrorStatusCode");
 router.get("/getGenesisNBMon/:id", async (req, res) => {
 	try {
 		let id = req.params.id;
-		let nbmon = await genesisLogic.getGenesisNBMon(id).catch((err) => {
+		let nbmon = await genesisLogic.getGenesisNBMon(parseInt(id)).catch((err) => {
 			throw err;
 		});
 		res.json(nbmon);
