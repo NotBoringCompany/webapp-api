@@ -12,7 +12,9 @@ router.get("/getGenesisNBMon/:id", async (req, res) => {
 		});
 		res.json(nbmon);
 	} catch (error) {
-		res.status(httpErrorStatusCode(error.code)).json({ error });
+		res
+			.status(httpErrorStatusCode(error.code))
+			.json({ error: error.toString() });
 	}
 });
 
