@@ -63,19 +63,19 @@ const groupByDate = (jsonQueryResult) => {
 };
 
 /**
- * @dev Saves newly generated hatching key to DB
- * This key is to be checked later after the hatching has finished.
+ * @dev Saves newly generated hatching signature to DB
+ * This signature is to be checked later after the hatching has finished.
  * It's a part of adding a "hatching event" to the user's activities.
- * See addToActivities(), checkHatchingKeyValid() & invalidateHatchingKey().
+ * See addToActivities(), checkHatchingSginatureValid() & invalidateHatchingSignature().
  */
 
-const saveHatchingKey = async (key) => {
-	const hatchingKeys = Moralis.Object.extend("HatchingKeys");
-	const newHatchingKey = new hatchingKeys();
-	newHatchingKey.set("key", key);
-	newHatchingKey.set("addedToActivity", false);
+const saveHatchingSignature = async (signature) => {
+	const hatchingSignatures = Moralis.Object.extend("HatchingSignatures");
+	const newHatchingSignature = new hatchingSignatures();
+	newHatchingSignature.set("signature", signature);
+	newHatchingSignature.set("addedToActivity", false);
 
-	await newHatchingKey.save(null, { useMasterKey: true });
+	await newHatchingSignature.save(null, { useMasterKey: true });
 };
 
 const addToActivities = async (
@@ -121,9 +121,11 @@ const addToActivities = async (
 			// Only for hatching activity (for now)
 			// Will be called from Frontend because hatching is done from there
 
-			const hatchingKey = await checkHatchingKeyValid(transactionHash);
+			const hatchingSignature = await checkHatchingSignatureValid(
+				transactionHash
+			);
 
-			const { valid, data, decodedKey } = hatchingKey;
+			const { valid, data, decodedSignature } = hatchingSignature;
 
 			if (valid) {
 				const { from_address, to_address, block_timestamp } = data;
@@ -144,11 +146,11 @@ const addToActivities = async (
 				//Saves using master key (due to CLP being only "read" for only public)
 				await newActivity.save(null, { useMasterKey: true });
 
-				await invalidateHatchingKey(decodedKey);
+				await invalidateHatchingSignature(decodedSignature);
 
 				return { status: "ok", message: "activity added" };
 			} else {
-				throw new Error("Hatching key is invalid");
+				throw new Error("Hatching signature is invalid");
 			}
 		}
 	} catch (err) {
@@ -157,13 +159,13 @@ const addToActivities = async (
 };
 
 /**
- * @dev Checks if hatching key is valid
+ * @dev Checks if hatching signature is valid
  * Valid means:
- * 1. an egg has been hatched with that key and,
+ * 1. an egg has been hatched with that signature and,
  * 2. this hatching "event" hasn't been added to the user's activity
  */
 
-const checkHatchingKeyValid = async (hash) => {
+const checkHatchingSignatureValid = async (hash) => {
 	const ethTransactions = Moralis.Object.extend("EthTransactions");
 	const ethTransactionQuery = new Moralis.Query(ethTransactions);
 	ethTransactionQuery.equalTo("hash", hash);
@@ -173,21 +175,24 @@ const checkHatchingKeyValid = async (hash) => {
 		return {
 			valid: false,
 			data: null,
-			decodedKey: null,
+			decodedSignature: null,
 		};
 
 	const ethTransactionResult = JSON.parse(JSON.stringify(queryResult));
 
-	//Checks from all hatching keys that are valid
-	const hatchingKeys = Moralis.Object.extend("HatchingKeys");
-	const hatchingKeyQuery = new Moralis.Query(hatchingKeys);
+	//Checks from all hatching signatures that are valid
+	const hatchingSignatures = Moralis.Object.extend("HatchingSignatures");
+	const hatchingSignatureQuery = new Moralis.Query(hatchingSignatures);
 	const decodedInput = decoder.decodeData(ethTransactionResult.input);
-	const hatchingKeyFromTransactionInput = decodedInput.inputs[0];
+	const hatchingSignatureFromTransactionInput = decodedInput.inputs[0];
 
-	hatchingKeyQuery.equalTo("key", hatchingKeyFromTransactionInput);
-	hatchingKeyQuery.equalTo("addedToActivity", false);
+	hatchingSignatureQuery.equalTo(
+		"signature",
+		hatchingSignatureFromTransactionInput
+	);
+	hatchingSignatureQuery.equalTo("addedToActivity", false);
 
-	const hatchingQueryResult = await hatchingKeyQuery.first({
+	const hatchingQueryResult = await hatchingSignatureQuery.first({
 		useMasterKey: true,
 	});
 
@@ -195,27 +200,27 @@ const checkHatchingKeyValid = async (hash) => {
 		return {
 			valid: true,
 			data: ethTransactionResult,
-			decodedKey: hatchingKeyFromTransactionInput,
+			decodedSignature: hatchingSignatureFromTransactionInput,
 		};
 	}
 	return {
 		valid: false,
 		data: null,
-		decodedKey: null,
+		decodedSignature: null,
 	};
 };
 
 /**
- * @dev Invalidates hatching key in DB by changing "addedToActivity" field to true
+ * @dev Invalidates hatching signature in DB by changing "addedToActivity" field to true
  * This is to make sure that no same activity can be added twice
  */
-const invalidateHatchingKey = async (key) => {
-	const hatchingKeys = Moralis.Object.extend("HatchingKeys");
-	const hatchingKeyQuery = new Moralis.Query(hatchingKeys);
+const invalidateHatchingSignature = async (signature) => {
+	const hatchingSignatures = Moralis.Object.extend("HatchingSignatures");
+	const hatchingSignatureQuery = new Moralis.Query(hatchingSignatures);
 
-	hatchingKeyQuery.equalTo("key", key);
+	hatchingSignatureQuery.equalTo("signature", signature);
 
-	const hatchingQueryResult = await hatchingKeyQuery.first({
+	const hatchingQueryResult = await hatchingSignatureQuery.first({
 		useMasterKey: true,
 	});
 
@@ -229,5 +234,5 @@ const invalidateHatchingKey = async (key) => {
 module.exports = {
 	getUserActivities,
 	addToActivities,
-	saveHatchingKey,
+	saveHatchingSignature,
 };

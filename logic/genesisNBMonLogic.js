@@ -358,7 +358,7 @@ const getOwnerGenesisNBMonIDs = async (address) => {
 		}
 		return convertedArray;
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err;
 	}
 };
 
@@ -377,7 +377,7 @@ const getOwnerGenesisNBMons = async (address) => {
 
 		return nbmons;
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err;
 	}
 };
 
@@ -394,7 +394,7 @@ const getGenesisNBMonTypes = async (genusParam) => {
 		return typesAggRes[0]["Types"];
 		// console.log(typesAggRes[0]["Types"][0]);
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err;
 	}
 };
 
@@ -487,7 +487,7 @@ const generalConfig = async () => {
 
 		return { timeStamps, supplies };
 	} catch (err) {
-		return err;
+		throw err;
 	}
 };
 
@@ -551,7 +551,7 @@ const config = async (address) => {
 
 		return { status, ...generalConfigs };
 	} catch (err) {
-		return err;
+		throw err;
 	}
 };
 
