@@ -133,14 +133,20 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 };
 
 const updateHatchedNBMon = async (
-	id,
-	stringMetadata,
-	numericMetadata,
-	boolMetadata,
+	id
 ) => {
 	try {
+		await Moralis.start({ serverUrl, appId, masterKey });
+		// get nbmon from blockchain
+		// Note: the nbmon needs to already be updated from the previous step, or else the results returned will be wrong.
+		const nbmon = await genesisContract.getNFT(id);
+
+		const stringMetadata = nbmon[7];
+		const numericMetadata = nbmon[8];
+		const boolMetadata = nbmon[9];
+
 		const GenesisNBMons = Moralis.Object.extend("Genesis_NBMons");
-		const genesisNBMons = new GenesisNBMons();
+		const genesisNBMons = new Moralis.Query(GenesisNBMons);
 		const query = genesisNBMons.equalTo("NBMon_ID", id);
 		const result = await query.first({useMasterKey: true});
 
@@ -156,7 +162,7 @@ const updateHatchedNBMon = async (
 			status: "OK"
 		}
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err;
 	}
 }
 

@@ -57,9 +57,9 @@ router.post("/uploadHatchedMetadata", async (req, res) => {
 });
 
 router.post("/updateHatchedNBMon", async (req, res) => {
-	const {id, stringMetadata, numericMetadata, boolMetadata} = req.body;
+	const {id} = req.body;
 
-	let updateNBMon = await updateHatchedNBMon(id, stringMetadata, numericMetadata, boolMetadata)
+	let updateNBMon = await updateHatchedNBMon(id)
 		.catch((err) => res.json(err.message));
 
 	res.json(updateNBMon);
