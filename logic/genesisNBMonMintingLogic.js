@@ -1,3 +1,5 @@
+const Moralis = require("moralis/node");
+const moment = require("moment");
 const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
@@ -51,7 +53,7 @@ const whitelistedMint = async (address) => {
 		await addToActivities(
 			jsonResponse.hash,
 			"genesisMinting",
-			"eth",
+			"matic",
 			process.env.MINTING_PRICE
 		);
 
@@ -71,19 +73,17 @@ const whitelistedMint = async (address) => {
 		genesisNBMons.set("String_Metadata", stringMetadata);
 		genesisNBMons.set("Numeric_Metadata", numericMetadata);
 		genesisNBMons.set("Bool_Metadata", boolMetadata);
-		genesisNBMons.set("Born_At", moment.unix());
-		genesisNBMons.set("Transferred_At", moment.unix());
+		genesisNBMons.set("Born_At", parseInt(moment.unix()));
+		genesisNBMons.set("Transferred_At", parseInt(moment.unix()));
 
-		genesisNBMons.save(null, {useMasterKey: true}).catch((err) => {
-			throw new Error(err.stack);
-		})
+		await genesisNBMons.save(null, { useMasterKey: true });
 
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, numericMetadata[0]);
 
 		return { nbmonId: mintedId };
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err;
 	}
 };
 
@@ -106,18 +106,18 @@ const publicMint = async (address) => {
 		);
 		let response = await signer.sendTransaction(unsignedTx);
 		await response.wait();
-		console.log("response", response);
 
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
 		const jsonResponse = JSON.parse(JSON.stringify(response));
+
 		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
 		//Parseplatform is used by Moralis' DB
 		//Upon successful minting
 		await addToActivities(
 			jsonResponse.hash,
 			"genesisMinting",
-			"eth",
+			"matic",
 			process.env.MINTING_PRICE
 		);
 
@@ -132,24 +132,22 @@ const publicMint = async (address) => {
 		const GenesisNBMons = Moralis.Object.extend("Genesis_NBMons");
 		const genesisNBMons = new GenesisNBMons();
 
-		genesisNBMons.set("Token_ID", mintedId);
+		genesisNBMons.set("NBMon_ID", mintedId);
 		genesisNBMons.set("Owner", owner);
 		genesisNBMons.set("String_Metadata", stringMetadata);
 		genesisNBMons.set("Numeric_Metadata", numericMetadata);
 		genesisNBMons.set("Bool_Metadata", boolMetadata);
-		genesisNBMons.set("Born_At", moment.unix());
-		genesisNBMons.set("Transferred_At", moment.unix());
+		genesisNBMons.set("Born_At", parseInt(moment.unix()));
+		genesisNBMons.set("Transferred_At", parseInt(moment.unix()));
 
-		genesisNBMons.save(null, {useMasterKey: true}).catch((err) => {
-			throw new Error(err.stack);
-		})
+		await genesisNBMons.save(null, { useMasterKey: true });
 
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, numericMetadata[0]);
 
 		return { nbmonId: mintedId };
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err;
 	}
 };
 
