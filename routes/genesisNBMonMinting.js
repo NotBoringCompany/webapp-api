@@ -31,9 +31,9 @@ router.post(
 
 router.post(
 	"/publicMint",
-	// paymentReceived,
-	// isPublicMintingTime,
-	// mintingTimeNotClosed,
+	paymentReceived,
+	isPublicMintingTime,
+	mintingTimeNotClosed,
 	async (req, res) => {
 		try {
 			const { purchaserAddress } = req.body;
@@ -42,7 +42,9 @@ router.post(
 
 			res.json(publicMint);
 		} catch (error) {
-			res.status(httpErrorStatusCode(error.code)).json({ error: error.toString() });
+			res
+				.status(httpErrorStatusCode(error.code))
+				.json({ error: error.toString() });
 		}
 	}
 );

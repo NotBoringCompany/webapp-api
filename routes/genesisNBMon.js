@@ -38,7 +38,9 @@ router.get("/getOwnerGenesisNBMons/:address", async (req, res) => {
 
 		res.json(nbmons);
 	} catch (error) {
-		res.status(httpErrorStatusCode(error.code)).json({ error });
+		res
+			.status(httpErrorStatusCode(error.code))
+			.json({ error: error.toString() });
 	}
 });
 

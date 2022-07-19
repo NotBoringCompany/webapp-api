@@ -1,69 +1,77 @@
 const express = require("express");
 const router = express.Router();
 
-const {  listItem, getItemsOnSale, getItemOnSale, generateTxSalt, deleteItemOnSale } = require("../logic/marketplaceLogic");
+const {
+	listItem,
+	getItemsOnSale,
+	getItemOnSale,
+	generateTxSalt,
+	deleteItemOnSale,
+} = require("../logic/marketplaceLogic");
 
 router.post("/listItem", async (req, res) => {
-    const { 
-        nftContract, 
-        tokenId, 
-        paymentToken, 
-        seller, 
-        price, 
-        txSalt, 
-        signature, 
-        saleType, 
-        startingPrice, 
-        endingPrice, 
-        minimumReserveBid, 
-        duration 
-    } = req.body;
+	const {
+		nftContract,
+		tokenId,
+		paymentToken,
+		seller,
+		price,
+		txSalt,
+		signature,
+		saleType,
+		startingPrice,
+		endingPrice,
+		minimumReserveBid,
+		duration,
+	} = req.body;
 
-    let addItem = await listItem(
-        nftContract, 
-        tokenId, 
-        paymentToken, 
-        seller, 
-        price, 
-        txSalt, 
-        signature, 
-        saleType, 
-        startingPrice, 
-        endingPrice, 
-        minimumReserveBid, 
-        duration
-        )
-        .catch((err) => res.json(err.message));
-    
-    res.json(addItem);
+	let addItem = await listItem(
+		nftContract,
+		tokenId,
+		paymentToken,
+		seller,
+		price,
+		txSalt,
+		signature,
+		saleType,
+		startingPrice,
+		endingPrice,
+		minimumReserveBid,
+		duration
+	).catch((err) => res.json(err.message));
+
+	res.json(addItem);
 });
 
 router.get("/getItems", async (_, res) => {
-    let items = await getItemsOnSale()
-        .catch((err) => res.json(err.message));
+	let items = await getItemsOnSale().catch((err) => res.json(err.message));
 
-    res.json(items);
+	res.json(items);
 });
 
-router.get("getItem", async (req, res) => {
-    const { tokenId } = req.body;
-    let item = await getItemOnSale(parseInt(tokenId)).catch((err) => res.json(err.message));
+router.get("/getItem", async (req, res) => {
+	const { tokenId } = req.body;
+	let item = await getItemOnSale(parseInt(tokenId)).catch((err) =>
+		res.json(err.message)
+	);
 
-    res.json(item);
+	res.json(item);
 });
 
 router.post("/generateTxSalt", async (_, res) => {
-    let salt = generateTxSalt();
+	let salt = generateTxSalt();
 
-    res.json(salt);
+	res.json(salt);
 });
 
-router.post("/deleteItem", async (req, res) => {
-    const {tokenId} = req.body;
+router.delete("/deleteItem", async (req, res) => {
+	const { tokenId } = req.body;
 
-    let deleteItem = await deleteItemOnSale(parseInt(tokenId)).catch((err) => res.json(err.message));
+	let deleteItem = await deleteItemOnSale(parseInt(tokenId)).catch((err) =>
+		res.json(err.message)
+	);
 
-    res.json(deleteItem);
+	res.json(deleteItem);
 });
 
 module.exports = router;

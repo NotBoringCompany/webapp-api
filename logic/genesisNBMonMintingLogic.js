@@ -4,7 +4,7 @@ const ethers = require("ethers");
 const fs = require("fs");
 const path = require("path");
 
-const { addToActivities } = require("./activitiesLogic");
+// const { addToActivities } = require("./activitiesLogic");
 const { uploadGenesisEggMetadata } = require("./genesisMetadataLogic");
 
 const pvtKey = process.env.PRIVATE_KEY_1;
@@ -48,15 +48,15 @@ const whitelistedMint = async (address) => {
 
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
-		const jsonResponse = JSON.parse(JSON.stringify(response));
+		// const jsonResponse = JSON.parse(JSON.stringify(response));
 
-		//Upon successful minting
-		await addToActivities(
-			jsonResponse.hash,
-			"genesisMinting",
-			"matic",
-			process.env.MINTING_PRICE
-		);
+		// //Upon successful minting
+		// await addToActivities(
+		// 	jsonResponse.hash,
+		// 	"genesisMinting",
+		// 	"matic",
+		// 	process.env.MINTING_PRICE
+		// );
 
 		const currentCount = await genesisContract._currentIndex();
 		// just to be extra safe
@@ -74,8 +74,8 @@ const whitelistedMint = async (address) => {
 		genesisNBMons.set("String_Metadata", stringMetadata);
 		genesisNBMons.set("Numeric_Metadata", numericMetadata);
 		genesisNBMons.set("Bool_Metadata", boolMetadata);
-		genesisNBMons.set("Born_At", parseInt(moment.unix()));
-		genesisNBMons.set("Transferred_At", parseInt(moment.unix()));
+		genesisNBMons.set("Born_At", parseInt(moment().unix()));
+		genesisNBMons.set("Transferred_At", parseInt(moment().unix()));
 
 		await genesisNBMons.save(null, { useMasterKey: true });
 
@@ -107,7 +107,6 @@ const publicMint = async (address) => {
 		);
 
 		let response = await signer.sendTransaction(unsignedTx);
-		console.log("response", response);
 		await response.wait();
 
 		//Turns response to string, and turn it back to JSON
@@ -119,7 +118,7 @@ const publicMint = async (address) => {
 		//Upon successful minting
 
 		// await addToActivities(
-		// 	response.hash,
+		// 	jsonResponse.hash,
 		// 	"genesisMinting",
 		// 	"matic",
 		// 	process.env.MINTING_PRICE
@@ -145,8 +144,8 @@ const publicMint = async (address) => {
 		genesisNBMons.set("String_Metadata", stringMetadata);
 		genesisNBMons.set("Numeric_Metadata", numericMetadata);
 		genesisNBMons.set("Bool_Metadata", boolMetadata);
-		genesisNBMons.set("Born_At", parseInt(moment.unix()));
-		genesisNBMons.set("Transferred_At", parseInt(moment.unix()));
+		genesisNBMons.set("Born_At", parseInt(moment().unix()));
+		genesisNBMons.set("Transferred_At", parseInt(moment().unix()));
 
 		await genesisNBMons.save(null, { useMasterKey: true });
 
