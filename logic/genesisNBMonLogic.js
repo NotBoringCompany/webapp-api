@@ -4,9 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
 
-const moralisAPINode = process.env.MORALIS_APINODE;
-// rinkeby URL connected with Moralis
-const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
+const nodeURL = process.env.RPC_URL;
+
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const {
@@ -26,10 +25,10 @@ const genesisContract = new ethers.Contract(
 /**
  * @dev Helper function to parse object data into a JSON string
  */
- const parseJSON = (data) => JSON.parse(JSON.stringify(data));
+const parseJSON = (data) => JSON.parse(JSON.stringify(data));
 
 /**
- * 
+ *
  * @dev Genesis NBMon returns a struct which contains relevant info and metadata in the form of type-based arrays.
  * stringMetadata[] = gender, rarity, mutation, species, genus, first type, second type, first passive and second passive (9 indexes)
  * numericMetadata[] = hatchingDuration, health potential, energy potential, attack potential, defense potential, spAtk potential, spDef potential, speed potential, fertility points and hatchedAt (10 indexes)
@@ -37,11 +36,10 @@ const genesisContract = new ethers.Contract(
  */
 const getGenesisNBMon = async (id) => {
 	try {
-		await Moralis.start({ serverUrl, appId, masterKey });
 		const GenesisNBMons = Moralis.Object.extend("Genesis_NBMons");
-		const genesisNBMon = new Moralis.Query("Genesis_NBMons");
+		const genesisNBMon = new Moralis.Query(GenesisNBMons);
 		const query = genesisNBMon.equalTo("NBMon_ID", id);
-		const result = await query.find({useMasterKey: true});
+		const result = await query.find({ useMasterKey: true });
 
 		const parsedResult = parseJSON(result);
 		const nbmon = parsedResult[0];
@@ -187,8 +185,8 @@ const getGenesisNBMon = async (id) => {
 				: parseInt(Number(nbmon["Numeric_Metadata"][7]));
 		nbmonObj["isEgg"] = nbmon["Bool_Metadata"][0];
 
+		console.log(nbmonObj);
 		return nbmonObj;
-
 	} catch (err) {
 		throw err;
 	}

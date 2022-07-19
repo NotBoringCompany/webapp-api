@@ -47,7 +47,7 @@ router.get("/getItems", async (_, res) => {
 
 router.get("getItem", async (req, res) => {
     const { tokenId } = req.body;
-    let item = await getItemOnSale(tokenId).catch((err) => res.json(err.message));
+    let item = await getItemOnSale(parseInt(tokenId)).catch((err) => res.json(err.message));
 
     res.json(item);
 });
@@ -61,7 +61,7 @@ router.post("/generateTxSalt", async (_, res) => {
 router.post("/deleteItem", async (req, res) => {
     const {tokenId} = req.body;
 
-    let deleteItem = await deleteItemOnSale(tokenId).catch((err) => res.json(err.message));
+    let deleteItem = await deleteItemOnSale(parseInt(tokenId)).catch((err) => res.json(err.message));
 
     res.json(deleteItem);
 });

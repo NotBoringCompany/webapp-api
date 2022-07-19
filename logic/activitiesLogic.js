@@ -87,11 +87,10 @@ const addToActivities = async (
 	try {
 		//if genesis minting (NFT transfers)
 		if (transactionType === "genesisMinting") {
-			const ethNFTTransfers = Moralis.Object.extend("EthNFTTransfers");
-			const ethNFTQuery = new Moralis.Query(ethNFTTransfers);
-
-			ethNFTQuery.equalTo("transaction_hash", transactionHash);
-			const queryResult = await ethNFTQuery.first({ useMasterKey: true });
+			const polygonNFTTransfers = Moralis.Object.extend("PolygonNFTTransfers");
+			const polygonNFTQuery = new Moralis.Query(polygonNFTTransfers);
+			polygonNFTQuery.equalTo("transaction_hash", transactionHash);
+			const queryResult = await polygonNFTQuery.first({ useMasterKey: true });
 
 			const jsonResult = JSON.parse(JSON.stringify(queryResult));
 			const { from_address, to_address, block_timestamp } = jsonResult;
@@ -166,10 +165,12 @@ const addToActivities = async (
  */
 
 const checkHatchingSignatureValid = async (hash) => {
-	const ethTransactions = Moralis.Object.extend("EthTransactions");
-	const ethTransactionQuery = new Moralis.Query(ethTransactions);
-	ethTransactionQuery.equalTo("hash", hash);
-	const queryResult = await ethTransactionQuery.first({ useMasterKey: true });
+	const polygonTransactions = Moralis.Object.extend("PolygonTransactions");
+	const polygonTransactionQuery = new Moralis.Query(polygonTransactions);
+	polygonTransactionQuery.equalTo("hash", hash);
+	const queryResult = await polygonTransactionQuery.first({
+		useMasterKey: true,
+	});
 
 	if (!queryResult)
 		return {
@@ -178,12 +179,12 @@ const checkHatchingSignatureValid = async (hash) => {
 			decodedSignature: null,
 		};
 
-	const ethTransactionResult = JSON.parse(JSON.stringify(queryResult));
+	const polygonTransactionResult = JSON.parse(JSON.stringify(queryResult));
 
 	//Checks from all hatching signatures that are valid
 	const hatchingSignatures = Moralis.Object.extend("HatchingSignatures");
 	const hatchingSignatureQuery = new Moralis.Query(hatchingSignatures);
-	const decodedInput = decoder.decodeData(ethTransactionResult.input);
+	const decodedInput = decoder.decodeData(polygonTransactionResult.input);
 	const hatchingSignatureFromTransactionInput = decodedInput.inputs[0];
 
 	hatchingSignatureQuery.equalTo(
@@ -199,7 +200,7 @@ const checkHatchingSignatureValid = async (hash) => {
 	if (hatchingQueryResult && decodedInput.method === "hatchFromEgg") {
 		return {
 			valid: true,
-			data: ethTransactionResult,
+			data: polygonTransactionResult,
 			decodedSignature: hatchingSignatureFromTransactionInput,
 		};
 	}

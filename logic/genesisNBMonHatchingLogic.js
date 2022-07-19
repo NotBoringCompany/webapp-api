@@ -8,10 +8,10 @@ const { getGenesisNBMonTypes } = require("./genesisNBMonLogic");
 
 const { saveHatchingSignature } = require("./activitiesLogic");
 
-const moralisAPINode = process.env.MORALIS_APINODE;
 const pvtKey = process.env.PRIVATE_KEY_1;
 // rinkeby URL connected with Moralis
-const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
+const nodeURL = process.env.RPC_URL;
+
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")
@@ -132,37 +132,41 @@ const randomizeHatchingStats = async (nbmonId, txSalt, signature) => {
 			signature,
 		};
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err;
 	}
 };
 
-const updateHatchedNBMon = async (
-	id,
-	stringMetadata,
-	numericMetadata,
-	boolMetadata,
-) => {
+const updateHatchedNBMon = async (id) => {
 	try {
+		await Moralis.start({ serverUrl, appId, masterKey });
+		// get nbmon from blockchain
+		// Note: the nbmon needs to already be updated from the previous step, or else the results returned will be wrong.
+		const nbmon = await genesisContract.getNFT(id);
+
+		const stringMetadata = nbmon[7];
+		const numericMetadata = nbmon[8];
+		const boolMetadata = nbmon[9];
+
 		const GenesisNBMons = Moralis.Object.extend("Genesis_NBMons");
-		const genesisNBMons = new GenesisNBMons();
+		const genesisNBMons = new Moralis.Query(GenesisNBMons);
 		const query = genesisNBMons.equalTo("NBMon_ID", id);
-		const result = await query.first({useMasterKey: true});
+		const result = await query.first({ useMasterKey: true });
 
 		result.set("String_Metadata", stringMetadata);
 		result.set("Numeric_Metadata", numericMetadata);
 		result.set("Bool_Metadata", boolMetadata);
 
 		result.save(null, { useMasterKey: true }).catch((err) => {
-			throw new Error(err.stack)
+			throw new Error(err.stack);
 		});
 
 		return {
-			status: "OK"
-		}
+			status: "OK",
+		};
 	} catch (err) {
-		throw new Error(err.stack);
+		throw err;
 	}
-}
+};
 
 const getNBMonBornAt = async (nbmonId) => {
 	const nbmon = await genesisContract.getNFT(nbmonId);
@@ -173,5 +177,5 @@ module.exports = {
 	randomizeHatchingStats,
 	generateSignature,
 	getNBMonBornAt,
-	updateHatchedNBMon
+	updateHatchedNBMon,
 };

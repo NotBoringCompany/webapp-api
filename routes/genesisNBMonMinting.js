@@ -8,6 +8,7 @@ const {
 	mintingTimeNotClosed,
 } = require("../middlewares/mintingTime");
 const { paymentReceived } = require("../middlewares/requirePayment");
+const httpErrorStatusCode = require("../utils/httpErrorStatusCode");
 
 router.post(
 	"/whitelistedMint",
@@ -15,27 +16,34 @@ router.post(
 	isWhitelistMintingTime,
 	mintingTimeNotClosed,
 	async (req, res) => {
-		const { purchaserAddress } = req.body;
+		try {
+			const { purchaserAddress } = req.body;
 
-		let whitelistedMint = await genesisMintingLogic
-			.whitelistedMint(purchaserAddress)
-			.catch((err) => res.json(err.message));
-		res.json(whitelistedMint);
+			let whitelistedMint = await genesisMintingLogic.whitelistedMint(
+				purchaserAddress
+			);
+			res.json(whitelistedMint);
+		} catch (error) {
+			res.status(httpErrorStatusCode(error.code)).json({ error });
+		}
 	}
 );
 
 router.post(
 	"/publicMint",
-	paymentReceived,
-	isPublicMintingTime,
-	mintingTimeNotClosed,
+	// paymentReceived,
+	// isPublicMintingTime,
+	// mintingTimeNotClosed,
 	async (req, res) => {
-		const { purchaserAddress } = req.body;
+		try {
+			const { purchaserAddress } = req.body;
 
-		let publicMint = await genesisMintingLogic
-			.publicMint(purchaserAddress)
-			.catch((err) => res.json(err.message));
-		res.json(publicMint);
+			let publicMint = await genesisMintingLogic.publicMint(purchaserAddress);
+
+			res.json(publicMint);
+		} catch (error) {
+			res.status(httpErrorStatusCode(error.code)).json({ error: error.toString() });
+		}
 	}
 );
 

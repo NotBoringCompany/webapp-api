@@ -1,6 +1,5 @@
 const ethers = require("ethers");
 
-const moralisAPINode = process.env.MORALIS_APINODE;
 // address for receiving payment from user
 const receiverWallet = process.env.RECEIVER_WALLET;
 const publicMintingPrice = parseFloat(process.env.MINTING_PRICE);
@@ -8,8 +7,9 @@ const whitelistedMintingPrice = parseFloat(
 	process.env.WHITELISTED_MINTING_PRICE
 );
 const genesisHatchingPrice = parseFloat(process.env.GENESIS_HATCHING_PRICE);
-// rinkeby URL connected with Moralis
-const nodeURL = `https://speedy-nodes-nyc.moralis.io/${moralisAPINode}/eth/rinkeby`;
+
+const nodeURL = process.env.RPC_URL;
+
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const paymentReceived = async (req, res, next) => {
