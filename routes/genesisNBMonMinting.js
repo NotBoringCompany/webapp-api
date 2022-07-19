@@ -31,9 +31,9 @@ router.post(
 
 router.post(
 	"/publicMint",
-	paymentReceived,
-	isPublicMintingTime,
-	mintingTimeNotClosed,
+	// paymentReceived,
+	// isPublicMintingTime,
+	// mintingTimeNotClosed,
 	async (req, res) => {
 		try {
 			const { purchaserAddress } = req.body;

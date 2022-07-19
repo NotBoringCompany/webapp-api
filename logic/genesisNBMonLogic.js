@@ -1,9 +1,3 @@
-require("dotenv").config();
-
-const serverUrl = process.env.MORALIS_SERVERURL;
-const appId = process.env.MORALIS_APPID;
-const masterKey = process.env.MORALIS_MASTERKEY;
-
 const Moralis = require("moralis/node");
 const ethers = require("ethers");
 const fs = require("fs");
@@ -41,7 +35,6 @@ const parseJSON = (data) => JSON.parse(JSON.stringify(data));
  */
 const getGenesisNBMon = async (id) => {
 	try {
-		await Moralis.start({ serverUrl, appId, masterKey });
 		const GenesisNBMons = Moralis.Object.extend("Genesis_NBMons");
 		const genesisNBMon = new Moralis.Query(GenesisNBMons);
 		const query = genesisNBMon.equalTo("NBMon_ID", id);
@@ -191,6 +184,7 @@ const getGenesisNBMon = async (id) => {
 				: parseInt(Number(nbmon["Numeric_Metadata"][7]));
 		nbmonObj["isEgg"] = nbmon["Bool_Metadata"][0];
 
+		console.log(nbmonObj);
 		return nbmonObj;
 	} catch (err) {
 		throw err;

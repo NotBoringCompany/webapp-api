@@ -89,6 +89,7 @@ const whitelistedMint = async (address) => {
 
 const publicMint = async (address) => {
 	try {
+		console.log("start");
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
 		let owner = address;
 		let amountToMint = 1;
@@ -97,6 +98,8 @@ const publicMint = async (address) => {
 		let numericMetadata = [300, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		let boolMetadata = [true];
 
+		console.log("signer: ", signer.address);
+
 		let unsignedTx = await genesisContract.populateTransaction.publicMint(
 			owner,
 			amountToMint,
@@ -104,8 +107,13 @@ const publicMint = async (address) => {
 			numericMetadata,
 			boolMetadata
 		);
+
+		console.log(unsignedTx);
+
 		let response = await signer.sendTransaction(unsignedTx);
 		await response.wait();
+
+		console.log(response);
 
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
