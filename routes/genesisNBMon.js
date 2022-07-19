@@ -27,7 +27,7 @@ router.get("/getOwnerGenesisNBMonIDs/:address", async (req, res) => {
 
 		res.json(ownerIds);
 	} catch (error) {
-		res.status(httpErrorStatusCode(error.code)).json({ error });
+		res.status(httpErrorStatusCode(error.code)).json({ error: error.toString() });
 	}
 });
 

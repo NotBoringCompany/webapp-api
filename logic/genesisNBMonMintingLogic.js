@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Moralis = require("moralis/node");
 const moment = require("moment");
 const ethers = require("ethers");
@@ -68,13 +69,13 @@ const whitelistedMint = async (address) => {
 		const GenesisNBMons = Moralis.Object.extend("Genesis_NBMons");
 		const genesisNBMons = new GenesisNBMons();
 
-		genesisNBMons.set("Token_ID", mintedId);
+		genesisNBMons.set("NBMon_ID", mintedId);
 		genesisNBMons.set("Owner", owner);
 		genesisNBMons.set("String_Metadata", stringMetadata);
 		genesisNBMons.set("Numeric_Metadata", numericMetadata);
 		genesisNBMons.set("Bool_Metadata", boolMetadata);
-		genesisNBMons.set("Born_At", parseInt(moment.unix()));
-		genesisNBMons.set("Transferred_At", parseInt(moment.unix()));
+		genesisNBMons.set("Born_At", parseInt(moment().unix()));
+		genesisNBMons.set("Transferred_At", parseInt(moment().unix()));
 
 		await genesisNBMons.save(null, { useMasterKey: true });
 
@@ -87,8 +88,12 @@ const whitelistedMint = async (address) => {
 	}
 };
 
+const serverUrl = process.env.MORALIS_SERVERURL;
+const appId = process.env.MORALIS_APPID;
+const masterKey = process.env.MORALIS_MASTERKEY;
 const publicMint = async (address) => {
 	try {
+		await Moralis.start({ serverUrl, appId, masterKey });
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
 		let owner = address;
 		let amountToMint = 1;
@@ -110,19 +115,20 @@ const publicMint = async (address) => {
 
 		//Turns response to string, and turn it back to JSON
 		//This is done because for some reason response is a ParseObject and not a JSON
+		
 		// const jsonResponse = JSON.parse(JSON.stringify(response));
 
 		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
 		//Parseplatform is used by Moralis' DB
 		//Upon successful minting
-		await addToActivities(
-			response.hash,
-			"genesisMinting",
-			"matic",
-			process.env.MINTING_PRICE
-		).catch((err) => {
-			throw err;
-		})
+		// await addToActivities(
+		// 	response.hash,
+		// 	"genesisMinting",
+		// 	"matic",
+		// 	process.env.MINTING_PRICE
+		// ).catch((err) => {
+		// 	throw err;
+		// })
 
 		const currentCount = await genesisContract._currentIndex();
 
@@ -142,8 +148,9 @@ const publicMint = async (address) => {
 		genesisNBMons.set("String_Metadata", stringMetadata);
 		genesisNBMons.set("Numeric_Metadata", numericMetadata);
 		genesisNBMons.set("Bool_Metadata", boolMetadata);
-		genesisNBMons.set("Born_At", parseInt(moment.unix()));
-		genesisNBMons.set("Transferred_At", parseInt(moment.unix()));
+		genesisNBMons.set("Born_At", parseInt(moment().unix()));
+		console.log(parseInt(moment().unix()))
+		genesisNBMons.set("Transferred_At", parseInt(moment().unix()));
 
 		await genesisNBMons.save(null, { useMasterKey: true });
 
@@ -155,6 +162,8 @@ const publicMint = async (address) => {
 		throw err;
 	}
 };
+
+publicMint("0x6FdCB216A701f6Beb805E6f4F3714cb1581cEb80");
 
 module.exports = {
 	whitelistedMint,

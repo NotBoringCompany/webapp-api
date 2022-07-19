@@ -184,7 +184,6 @@ const getGenesisNBMon = async (id) => {
 				: parseInt(Number(nbmon["Numeric_Metadata"][7]));
 		nbmonObj["isEgg"] = nbmon["Bool_Metadata"][0];
 
-		console.log(nbmonObj);
 		return nbmonObj;
 	} catch (err) {
 		throw err;
@@ -350,11 +349,13 @@ const getGenesisNBMon = async (id) => {
 const getOwnerGenesisNBMonIDs = async (address) => {
 	try {
 		const ids = await genesisContract.getOwnerNFTIds(address);
+
 		let convertedArray = [];
 		for (let i = 0; i < ids.length; i++) {
 			let converted = parseInt(Number(ids[i]));
 			convertedArray.push(converted);
 		}
+
 		return convertedArray;
 	} catch (err) {
 		throw err;
@@ -367,6 +368,7 @@ const getOwnerGenesisNBMonIDs = async (address) => {
 const getOwnerGenesisNBMons = async (address) => {
 	try {
 		const ownedIDs = await getOwnerGenesisNBMonIDs(address);
+
 		let nbmons = [];
 
 		for (let i = 0; i < ownedIDs.length; i++) {
