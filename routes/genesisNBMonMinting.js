@@ -42,7 +42,7 @@ router.post(
 
 			res.json(publicMint);
 		} catch (error) {
-			res.status(httpErrorStatusCode(error.code)).json({ error });
+			res.status(httpErrorStatusCode(error.code)).json({ error: error.toString() });
 		}
 	}
 );
