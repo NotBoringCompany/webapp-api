@@ -7,7 +7,9 @@ const whitelistedMintingPrice = parseFloat(
 	process.env.WHITELISTED_MINTING_PRICE
 );
 const genesisHatchingPrice = parseFloat(process.env.GENESIS_HATCHING_PRICE);
-const nodeURL = "https://rpc-mumbai.maticvigil.com";
+
+const nodeURL = process.env.RPC_URL;
+
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const paymentReceived = async (req, res, next) => {

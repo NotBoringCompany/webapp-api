@@ -9,7 +9,8 @@ const { uploadGenesisEggMetadata } = require("./genesisMetadataLogic");
 
 const pvtKey = process.env.PRIVATE_KEY_1;
 
-const nodeURL = "https://rpc-mumbai.maticvigil.com";
+const nodeURL = process.env.RPC_URL;
+
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const genesisNBMonABI = fs.readFileSync(
@@ -106,6 +107,7 @@ const publicMint = async (address) => {
 		);
 
 		let response = await signer.sendTransaction(unsignedTx);
+		console.log("response", response);
 		await response.wait();
 
 		//Turns response to string, and turn it back to JSON
@@ -115,14 +117,15 @@ const publicMint = async (address) => {
 		//Read about ParseObject: https://parseplatform.org/Parse-SDK-JS/api/master/Parse.Object.html
 		//Parseplatform is used by Moralis' DB
 		//Upon successful minting
-		await addToActivities(
-			response.hash,
-			"genesisMinting",
-			"matic",
-			process.env.MINTING_PRICE
-		).catch((err) => {
-			throw err;
-		})
+
+		// await addToActivities(
+		// 	response.hash,
+		// 	"genesisMinting",
+		// 	"matic",
+		// 	process.env.MINTING_PRICE
+		// ).catch((err) => {
+		// 	throw err;
+		// });
 
 		const currentCount = await genesisContract._currentIndex();
 

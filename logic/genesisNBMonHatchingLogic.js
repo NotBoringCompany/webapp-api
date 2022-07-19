@@ -10,7 +10,8 @@ const { saveHatchingSignature } = require("./activitiesLogic");
 
 const pvtKey = process.env.PRIVATE_KEY_1;
 // rinkeby URL connected with Moralis
-const nodeURL = "https://rpc-mumbai.maticvigil.com";
+const nodeURL = process.env.RPC_URL;
+
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 const genesisNBMonABI = fs.readFileSync(
 	path.resolve(__dirname, "../abi/genesisNBMon.json")

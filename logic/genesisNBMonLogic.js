@@ -4,7 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
 
-const nodeURL = "https://rpc-mumbai.maticvigil.com";
+const nodeURL = process.env.RPC_URL;
+
 const customHttpProvider = new ethers.providers.JsonRpcProvider(nodeURL);
 
 const {
