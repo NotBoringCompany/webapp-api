@@ -77,7 +77,16 @@ const whitelistedMint = async (address) => {
 		genesisNBMons.set("Born_At", parseInt(moment().unix()));
 		genesisNBMons.set("Transferred_At", parseInt(moment().unix()));
 
-		await genesisNBMons.save(null, { useMasterKey: true });
+		await genesisNBMons.save(null, { useMasterKey: true }).then((obj) => {
+			// gets the object ID for the nbmon and then sets it to the game data class's nbmon instance
+			gameData.set("NBMon_Instance", {
+				__type: "Pointer",
+				className: "Genesis_NBMons",
+				objectId: obj.id
+			});
+		});
+
+		await gameData.save(null, { useMasterKey: true });
 
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, numericMetadata[0]);
@@ -90,6 +99,7 @@ const whitelistedMint = async (address) => {
 
 const publicMint = async (address) => {
 	try {
+		await Moralis.start({ serverUrl, appId, masterKey });
 		const signer = new ethers.Wallet(pvtKey, customHttpProvider);
 		let owner = address;
 		let amountToMint = 1;
@@ -147,7 +157,19 @@ const publicMint = async (address) => {
 		genesisNBMons.set("Born_At", parseInt(moment().unix()));
 		genesisNBMons.set("Transferred_At", parseInt(moment().unix()));
 
-		await genesisNBMons.save(null, { useMasterKey: true });
+		const GameData = Moralis.Object.extend("Genesis_NBMons_GameData");
+		const gameData = new GameData();
+
+		await genesisNBMons.save(null, { useMasterKey: true }).then((obj) => {
+			// gets the object ID for the nbmon and then sets it to the game data class's nbmon instance
+			gameData.set("NBMon_Instance", {
+				__type: "Pointer",
+				className: "Genesis_NBMons",
+				objectId: obj.id
+			});
+		});
+
+		await gameData.save(null, { useMasterKey: true });
 
 		//add metadata of the egg to Spaces
 		uploadGenesisEggMetadata(mintedId, numericMetadata[0]);
