@@ -97,6 +97,11 @@ const whitelistedMint = async (address) => {
 	}
 };
 
+const serverUrl = process.env.MORALIS_SERVERURL;
+const appId = process.env.MORALIS_APPID;
+const masterKey = process.env.MORALIS_MASTERKEY;
+
+
 const publicMint = async (address) => {
 	try {
 		await Moralis.start({ serverUrl, appId, masterKey });
@@ -179,6 +184,8 @@ const publicMint = async (address) => {
 		throw err;
 	}
 };
+
+publicMint("0xe66e4D09c5906177d7855f9650f757f8bbB2FD2d");
 
 module.exports = {
 	whitelistedMint,
